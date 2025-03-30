@@ -2,9 +2,11 @@ package com.marketplace;
 
 import com.marketplace.facade.MarketplaceFacade;
 import com.marketplace.menu.MainMenu;
+import com.marketplace.repository.AdminRepository;
 import com.marketplace.repository.CompradorRepository;
 import com.marketplace.repository.LojaRepository;
 import com.marketplace.repository.ProdutoRepository;
+import com.marketplace.service.AdminService;
 import com.marketplace.service.CompradorService;
 import com.marketplace.service.LojaService;
 import com.marketplace.service.ProdutoService;
@@ -24,11 +26,13 @@ public class Main {
         LojaRepository lojaRepo = new LojaRepository();
         CompradorRepository compradorRepo = new CompradorRepository();
         ProdutoRepository produtoRepo = new ProdutoRepository();
+        AdminRepository adminRepo = new AdminRepository();
 
         LojaService lojaService = new LojaService(lojaRepo);
         CompradorService compradorService = new CompradorService(compradorRepo);
         ProdutoService produtoService = new ProdutoService(produtoRepo, lojaRepo);
+        AdminService adminService = new AdminService(adminRepo);
 
-        return new MarketplaceFacade(lojaService, compradorService, produtoService);
+        return new MarketplaceFacade(lojaService, compradorService, produtoService, adminService);
     }
 }
