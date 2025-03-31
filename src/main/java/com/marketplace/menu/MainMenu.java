@@ -28,6 +28,11 @@ public class MainMenu extends Menu {
             public void execute() { new ProdutoMenu(scanner, facade).show(); }
         });
 
+        addOption(4, new MenuOption() {
+            public String getDescription() { return "Gerenciar Administradores"; }
+            public void execute() { new AdminMenu(scanner, facade).show(); }
+        });
+
         addOption(0, new MenuOption() {
             public String getDescription() { return "Sair"; }
             public void execute() { }
