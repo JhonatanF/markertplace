@@ -1,8 +1,10 @@
 package com.marketplace.facade;
 
+import com.marketplace.model.Admin;
 import com.marketplace.model.Comprador;
 import com.marketplace.model.Loja;
 import com.marketplace.model.Produto;
+import com.marketplace.service.AdminService;
 import com.marketplace.service.CompradorService;
 import com.marketplace.service.LojaService;
 import com.marketplace.service.ProdutoService;
@@ -14,11 +16,13 @@ public class MarketplaceFacade {
     private final LojaService lojaService;
     private final CompradorService compradorService;
     private final ProdutoService produtoService;
+    private final AdminService adminService;
 
-    public MarketplaceFacade(LojaService lojaService, CompradorService compradorService, ProdutoService produtoService) {
+    public MarketplaceFacade(LojaService lojaService, CompradorService compradorService, ProdutoService produtoService, AdminService adminService) {
         this.lojaService = lojaService;
         this.compradorService = compradorService;
         this.produtoService = produtoService;
+        this.adminService = adminService;
     }
 
     // Operações de Loja
@@ -94,5 +98,28 @@ public class MarketplaceFacade {
 
     public void removerProduto(String id) {
         produtoService.remover(id);
+    }
+
+    // Operações de Administrador
+    public Admin cadastrarAdmin(String nome, String email, String senha, String cpf, String endereco) {
+        Admin admin = new Admin(nome, email, senha, cpf, endereco);
+        return adminService.cadastrar(admin);
+    }
+
+    public Optional<Admin> buscarAdmin(String cpf) {
+        return adminService.buscarPorId(cpf);
+    }
+
+    public List<Admin> listarAdmins() {
+        return adminService.listarTodos();
+    }
+
+    public Admin atualizarAdmin(String nome, String email, String senha, String cpf, String endereco) {
+        Admin admin = new Admin(nome, email, senha, cpf, endereco);
+        return adminService.atualizar(admin);
+    }
+
+    public void removerAdmin(String id) {
+        adminService.remover(id);
     }
 }
