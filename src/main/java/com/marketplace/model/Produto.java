@@ -25,6 +25,17 @@ public class Produto implements Serializable {
         this.lojaCpfCnpj = lojaCpfCnpj;
     }
 
+    public Produto(String id, String nome, double valor, String tipo, int quantidade, String marca, String descricao, String lojaCpfCnpj) {
+        this.id = id;
+        this.nome = nome;
+        this.valor = valor;
+        this.tipo = tipo;
+        this.quantidade = quantidade;
+        this.marca = marca;
+        this.descricao = descricao;
+        this.lojaCpfCnpj = lojaCpfCnpj;
+    }
+
     // Getters and Setters
     public String getId() {
         return id;

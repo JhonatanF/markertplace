@@ -1,48 +1,69 @@
 package com.marketplace.menu;
 
 import com.marketplace.facade.MarketplaceFacade;
+import com.marketplace.model.Loja;
 import com.marketplace.model.Produto;
+
+import java.util.List;
 import java.util.Scanner;
 
 public class ProdutoMenu extends Menu {
     private final MarketplaceFacade facade;
+    private final Loja loja;
+
+    public ProdutoMenu(Scanner scanner, MarketplaceFacade facade, Loja loja) {
+        super(scanner, "GERENCIAR PRODUTOS");
+        this.facade = facade;
+        this.loja = loja;
+        System.out.println(loja);
+    }
 
     public ProdutoMenu(Scanner scanner, MarketplaceFacade facade) {
         super(scanner, "GERENCIAR PRODUTOS");
         this.facade = facade;
+        this.loja = null;
     }
 
     @Override
     protected void initializeOptions() {
-        addOption(1, new MenuOption() {
+        int key = 1;
+        addOption(key, new MenuOption() {
             public String getDescription() { return "Cadastrar Produto"; }
             public void execute() { cadastrarProduto(); }
         });
+        key++;
 
-        addOption(2, new MenuOption() {
+        addOption(key, new MenuOption() {
             public String getDescription() { return "Buscar Produto"; }
             public void execute() { buscarProduto(); }
         });
+        key++;
 
-        addOption(3, new MenuOption() {
+        addOption(key, new MenuOption() {
             public String getDescription() { return "Listar Produtos"; }
             public void execute() { listarProdutos(); }
         });
+        key++;
 
-        addOption(4, new MenuOption() {
-            public String getDescription() { return "Listar Produtos por Loja"; }
-            public void execute() { listarProdutosPorLoja(); }
-        });
+        if (this.loja == null) { //Não necessário quando logado como loja
+            addOption(key, new MenuOption() {
+                public String getDescription() { return "Listar Produtos por Loja"; }
+                public void execute() { listarProdutosPorLoja(); }
+            });
+            key++;
+        }
 
-        addOption(5, new MenuOption() {
+        addOption(key, new MenuOption() {
             public String getDescription() { return "Atualizar Produto"; }
             public void execute() { atualizarProduto(); }
         });
+        key++;
 
-        addOption(6, new MenuOption() {
+        addOption(key, new MenuOption() {
             public String getDescription() { return "Remover Produto"; }
             public void execute() { removerProduto(); }
         });
+        key++;
 
         addOption(0, new MenuOption() {
             public String getDescription() { return "Voltar"; }
@@ -66,8 +87,15 @@ public class ProdutoMenu extends Menu {
         String marca = scanner.nextLine();
         System.out.print("Descrição: ");
         String descricao = scanner.nextLine();
-        System.out.print("CPF/CNPJ da Loja: ");
-        String lojaCpfCnpj = scanner.nextLine();
+
+        String lojaCpfCnpj = "";
+
+        if (loja == null) {
+            System.out.print("CPF/CNPJ da Loja: ");
+            lojaCpfCnpj = scanner.nextLine();
+        }else{
+            lojaCpfCnpj = loja.getCpfCnpj();
+        }
 
         try {
             Produto produto = facade.cadastrarProduto(nome, valor, tipo, quantidade, marca, descricao, lojaCpfCnpj);
@@ -87,12 +115,17 @@ public class ProdutoMenu extends Menu {
     }
 
     private void listarProdutos() {
-        var produtos = facade.listarProdutos();
-        if (produtos.isEmpty()) {
-            System.out.println("Nenhum produto cadastrado");
-            return;
+        List<Produto> produtos;
+        if (loja == null) {
+            produtos = facade.listarProdutos();
+        }else {
+            produtos = facade.listarProdutosDaLoja(loja.getCpfCnpj());
         }
-        produtos.forEach(System.out::println);
+            if (produtos.isEmpty()) {
+                System.out.println("Nenhum produto encontrado para esta loja");
+                return;
+            }
+            produtos.forEach(System.out::println);
     }
 
     private void listarProdutosPorLoja() {
@@ -129,8 +162,15 @@ public class ProdutoMenu extends Menu {
         String marca = scanner.nextLine();
         System.out.print("Nova descrição: ");
         String descricao = scanner.nextLine();
-        System.out.print("CPF/CNPJ da Loja: ");
-        String lojaCpfCnpj = scanner.nextLine();
+
+        String lojaCpfCnpj = "";
+
+        if (loja == null) {
+            System.out.print("CPF/CNPJ da Loja: ");
+            lojaCpfCnpj = scanner.nextLine();
+        }else{
+            lojaCpfCnpj = loja.getCpfCnpj();
+        }
 
         try {
             Produto produto = facade.atualizarProduto(id, nome, valor, tipo, quantidade, marca, descricao, lojaCpfCnpj);

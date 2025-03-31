@@ -92,7 +92,7 @@ public class MarketplaceFacade {
 
     public Produto atualizarProduto(String id, String nome, double valor, String tipo, 
                                    int quantidade, String marca, String descricao, String lojaCpfCnpj) {
-        Produto produto = new Produto(nome, valor, tipo, quantidade, marca, descricao, lojaCpfCnpj);
+        Produto produto = new Produto(id,nome, valor, tipo, quantidade, marca, descricao, lojaCpfCnpj);
         return produtoService.atualizar(produto);
     }
 
