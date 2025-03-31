@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class LojaServiceTest {
     @TempDir
     Path tempDir;
-    
+
     private LojaRepository repository;
     private LojaService service;
     private Loja loja;
@@ -25,18 +25,19 @@ class LojaServiceTest {
         repository = new LojaRepository();
         service = new LojaService(repository);
         loja = new Loja("Loja Teste", "loja@teste.com", "senha123", "12345678901", "Rua Teste, 123");
+        service.removerLojas();
     }
 
     @Test
     void testCadastrarLoja() {
         Loja cadastrada = service.cadastrar(loja);
-        
+
         assertEquals(loja.getNome(), cadastrada.getNome());
         assertEquals(loja.getEmail(), cadastrada.getEmail());
         assertEquals(loja.getSenha(), cadastrada.getSenha());
         assertEquals(loja.getCpfCnpj(), cadastrada.getCpfCnpj());
         assertEquals(loja.getEndereco(), cadastrada.getEndereco());
-        
+
         Optional<Loja> encontrada = service.buscarPorId(loja.getCpfCnpj());
         assertTrue(encontrada.isPresent());
     }
@@ -44,7 +45,7 @@ class LojaServiceTest {
     @Test
     void testBuscarLoja() {
         service.cadastrar(loja);
-        
+
         Optional<Loja> encontrada = service.buscarPorId(loja.getCpfCnpj());
         assertTrue(encontrada.isPresent());
         assertEquals(loja.getNome(), encontrada.get().getNome());
@@ -53,8 +54,8 @@ class LojaServiceTest {
     @Test
     void testListarLojas() {
         service.cadastrar(loja);
-        
-        Loja loja2 = new Loja("Outra Loja", "outra@email.com", "senha456", 
+
+        Loja loja2 = new Loja("Outra Loja", "outra@email.com", "senha456",
                              "98765432101", "Rua Outra, 456");
         service.cadastrar(loja2);
 
@@ -65,14 +66,14 @@ class LojaServiceTest {
     @Test
     void testAtualizarLoja() {
         service.cadastrar(loja);
-        
+
         loja.setNome("Nome Atualizado");
         loja.setEmail("novo@email.com");
         loja.setSenha("novaSenha123");
         loja.setEndereco("Novo Endereço");
 
         Loja atualizada = service.atualizar(loja);
-        
+
         assertEquals("Nome Atualizado", atualizada.getNome());
         assertEquals("novo@email.com", atualizada.getEmail());
         assertEquals("novaSenha123", atualizada.getSenha());
@@ -82,7 +83,7 @@ class LojaServiceTest {
     @Test
     void testRemoverLoja() {
         service.cadastrar(loja);
-        
+
         assertTrue(service.buscarPorId(loja.getCpfCnpj()).isPresent());
         service.remover(loja.getCpfCnpj());
         assertFalse(service.buscarPorId(loja.getCpfCnpj()).isPresent());
@@ -91,19 +92,17 @@ class LojaServiceTest {
     @Test
     void testAtualizarLojaInexistente() {
         Loja lojaInexistente = new Loja("Nome", "email@test.com", "senha", "cpf-inexistente", "endereco");
-        assertThrows(IllegalArgumentException.class, () -> 
+        assertThrows(IllegalArgumentException.class, () ->
             service.atualizar(lojaInexistente)
         );
     }
 
     @Test
     void testCadastrarLojaJaExistente() {
-        service.cadastrar(loja.getNome(), loja.getEmail(), loja.getSenha(), 
-                        loja.getCpfCnpj(), loja.getEndereco());
-        
+        service.cadastrar(loja);
+
         assertThrows(IllegalArgumentException.class, () ->
-            service.cadastrar(loja.getNome(), loja.getEmail(), loja.getSenha(), 
-                           loja.getCpfCnpj(), loja.getEndereco())
+            service.cadastrar(loja)
         );
     }
 }

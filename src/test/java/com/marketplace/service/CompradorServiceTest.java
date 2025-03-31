@@ -26,6 +26,7 @@ class CompradorServiceTest {
         service = new CompradorService(repository);
         comprador = new Comprador("Comprador Teste", "comprador@teste.com", "senha123", 
                                 "12345678901", "Rua Teste, 123");
+        service.removerCompradores();
     }
 
     @Test
@@ -99,12 +100,10 @@ class CompradorServiceTest {
 
     @Test
     void testCadastrarCompradorJaExistente() {
-        service.cadastrar(comprador.getNome(), comprador.getEmail(), comprador.getSenha(), 
-                         comprador.getCpf(), comprador.getEndereco());
-        
+        service.cadastrar(comprador);
+
         assertThrows(IllegalArgumentException.class, () ->
-            service.cadastrar(comprador.getNome(), comprador.getEmail(), comprador.getSenha(), 
-                            comprador.getCpf(), comprador.getEndereco())
+            service.cadastrar(comprador)
         );
     }
 }

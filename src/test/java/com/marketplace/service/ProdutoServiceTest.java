@@ -34,6 +34,7 @@ class ProdutoServiceTest {
         lojaRepository.save(loja);
         
         produto = new Produto("Produto Teste", 99.99, "Tipo", 10, "Marca", "Descrição", loja.getCpfCnpj());
+        service.removerProdutos();
     }
 
     @Test

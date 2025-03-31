@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -98,7 +99,7 @@ class ProdutoRepositoryTest {
         List<Produto> storeProducts = repository.findByLoja(storeCpfCnpj);
         List<Produto> expectedProducts = produtos.stream()
             .filter(p -> p.getLojaCpfCnpj().equals(storeCpfCnpj))
-            .toList();
+            .collect(Collectors.toList());
 
         assertEquals(expectedProducts.size(), storeProducts.size());
         assertTrue(storeProducts.stream().allMatch(p -> p.getLojaCpfCnpj().equals(storeCpfCnpj)));

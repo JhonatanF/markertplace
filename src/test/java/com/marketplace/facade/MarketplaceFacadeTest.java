@@ -3,9 +3,11 @@ package com.marketplace.facade;
 import com.marketplace.model.Comprador;
 import com.marketplace.model.Loja;
 import com.marketplace.model.Produto;
+import com.marketplace.repository.AdminRepository;
 import com.marketplace.repository.CompradorRepository;
 import com.marketplace.repository.LojaRepository;
 import com.marketplace.repository.ProdutoRepository;
+import com.marketplace.service.AdminService;
 import com.marketplace.service.CompradorService;
 import com.marketplace.service.LojaService;
 import com.marketplace.service.ProdutoService;
@@ -33,12 +35,14 @@ class MarketplaceFacadeTest {
         LojaRepository lojaRepo = new LojaRepository();
         CompradorRepository compradorRepo = new CompradorRepository();
         ProdutoRepository produtoRepo = new ProdutoRepository();
+        AdminRepository adminRepo = new AdminRepository();
 
         LojaService lojaService = new LojaService(lojaRepo);
         CompradorService compradorService = new CompradorService(compradorRepo);
         ProdutoService produtoService = new ProdutoService(produtoRepo, lojaRepo);
+        AdminService adminService = new AdminService(adminRepo);
 
-        facade = new MarketplaceFacade(lojaService, compradorService, produtoService);
+        facade = new MarketplaceFacade(lojaService, compradorService, produtoService, adminService);
 
         // Criar dados de teste
         loja = new Loja("Loja Teste", "loja@teste.com", "senha123", "12345678901", "Rua Teste, 123");
