@@ -52,4 +52,4 @@
 - DEV: Vinícius Araújo
 
 ### Burndown Chart
-![img.png](burndown-sp1.png)
+![img.png](burndown-sp2.png)
