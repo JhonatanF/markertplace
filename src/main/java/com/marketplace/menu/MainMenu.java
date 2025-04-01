@@ -14,23 +14,13 @@ public class MainMenu extends Menu {
     @Override
     protected void initializeOptions() {
         addOption(1, new MenuOption() {
-            public String getDescription() { return "Gerenciar Lojas"; }
-            public void execute() { new LojaMenu(scanner, facade).show(); }
+            public String getDescription() { return "Login"; }
+            public void execute() { new LoginMenu(scanner, facade).show(); }
         });
 
         addOption(2, new MenuOption() {
-            public String getDescription() { return "Gerenciar Compradores"; }
-            public void execute() { new CompradorMenu(scanner, facade).show(); }
-        });
-
-        addOption(3, new MenuOption() {
-            public String getDescription() { return "Gerenciar Produtos"; }
-            public void execute() { new ProdutoMenu(scanner, facade).show(); }
-        });
-
-        addOption(4, new MenuOption() {
-            public String getDescription() { return "Gerenciar Administradores"; }
-            public void execute() { new AdminMenu(scanner, facade).show(); }
+            public String getDescription() { return "Cadastro"; }
+            public void execute() { new CadastroMenu(scanner, facade).show(); }
         });
 
         addOption(0, new MenuOption() {
