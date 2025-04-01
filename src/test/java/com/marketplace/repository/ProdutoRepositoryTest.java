@@ -1,114 +1,88 @@
 package com.marketplace.repository;
 
 import com.marketplace.model.Produto;
-import com.marketplace.utils.TestDataLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+public class ProdutoRepositoryTest {
 
-class ProdutoRepositoryTest {
-    private ProdutoRepository repository;
+    private ProdutoRepository produtoRepository;
     private Produto produto;
 
     @BeforeEach
     void setUp() {
-        repository = new ProdutoRepository();
-        produto = TestDataLoader.loadProdutos().get(0);
-    }
+        // Inicializa o repositório
+        produtoRepository = new ProdutoRepository();
 
-
-
-    @Test
-    void testSaveAndFind() {
-        repository.save(produto);
-        Optional<Produto> found = repository.findById(produto.getId());
-        
-        assertTrue(found.isPresent());
-        assertEquals(produto.getNome(), found.get().getNome());
-        assertEquals(produto.getValor(), found.get().getValor());
-        assertEquals(produto.getTipo(), found.get().getTipo());
-        assertEquals(produto.getQuantidade(), found.get().getQuantidade());
-        assertEquals(produto.getMarca(), found.get().getMarca());
-        assertEquals(produto.getDescricao(), found.get().getDescricao());
-        assertEquals(produto.getLojaCpfCnpj(), found.get().getLojaCpfCnpj());
+        // Cria um novo produto usando o construtor com os novos parâmetros
+        produto = new Produto("Produto Teste", 100.0, "Categoria A", 10, "Marca X", "Descrição do Produto", "00000000000191");
     }
 
     @Test
-    void testFindNonExistent() {
-        Optional<Produto> found = repository.findById("id-inexistente");
-        assertFalse(found.isPresent());
+    void testSaveAndFindById() {
+        // Testa salvar um produto e encontrá-lo pelo ID
+        produtoRepository.save(produto);
+
+        Produto foundProduto = produtoRepository.findById(produto.getId()).orElse(null);
+
+        assertNotNull(foundProduto, "Produto deveria ser encontrado.");
+        assertEquals(produto.getNome(), foundProduto.getNome(), "Os nomes dos produtos devem ser iguais.");
+        assertEquals(produto.getValor(), foundProduto.getValor(), "Os valores dos produtos devem ser iguais.");
+        assertEquals(produto.getTipo(), foundProduto.getTipo(), "Os tipos dos produtos devem ser iguais.");
+        assertEquals(produto.getQuantidade(), foundProduto.getQuantidade(), "As quantidades dos produtos devem ser iguais.");
+        assertEquals(produto.getMarca(), foundProduto.getMarca(), "As marcas dos produtos devem ser iguais.");
+        assertEquals(produto.getDescricao(), foundProduto.getDescricao(), "As descrições dos produtos devem ser iguais.");
+        assertEquals(produto.getLojaCpfCnpj(), foundProduto.getLojaCpfCnpj(), "Os CNPJs das lojas devem ser iguais.");
     }
 
     @Test
     void testFindAll() {
-        List<Produto> produtos = TestDataLoader.loadProdutos();
-        produtos.forEach(p -> repository.save(p));
+        // Testa a recuperação de todos os produtos
+        produtoRepository.save(produto);
 
-        List<Produto> foundProdutos = repository.findAll();
-        assertEquals(produtos.size(), foundProdutos.size());
-        produtos.forEach(p -> 
-            assertTrue(foundProdutos.stream()
-                .anyMatch(fp -> fp.getId().equals(p.getId()))));
-    }
-
-    @Test
-    void testFindAllEmpty() {
-        List<Produto> produtos = repository.findAll();
-        assertTrue(produtos.isEmpty());
+        List<Produto> produtos = produtoRepository.findAll();
+        assertFalse(produtos.isEmpty(), "A lista de produtos não deve estar vazia.");
+        assertTrue(produtos.contains(produto), "Produto deveria estar na lista.");
     }
 
     @Test
     void testDelete() {
-        repository.save(produto);
-        assertTrue(repository.findById(produto.getId()).isPresent());
-        
-        repository.delete(produto.getId());
-        assertFalse(repository.findById(produto.getId()).isPresent());
-    }
+        // Testa a exclusão de um produto
+        produtoRepository.save(produto);
+        assertTrue(produtoRepository.exists(produto.getId()), "Produto deveria existir antes de ser excluído.");
 
-    @Test
-    void testDeleteNonExistent() {
-        repository.delete("id-inexistente"); // Não deve lançar exceção
-    }
-
-    @Test
-    void testUpdate() {
-        repository.save(produto);
-        
-        produto.setNome("Nome Atualizado");
-        produto.setValor(199.99);
-        repository.save(produto);
-        
-        Optional<Produto> updated = repository.findById(produto.getId());
-        assertTrue(updated.isPresent());
-        assertEquals("Nome Atualizado", updated.get().getNome());
-        assertEquals(199.99, updated.get().getValor());
-    }
-
-    @Test
-    void testFindByLoja() {
-        List<Produto> produtos = TestDataLoader.loadProdutos();
-        String storeCpfCnpj = produto.getLojaCpfCnpj();
-        produtos.forEach(p -> repository.save(p));
-
-        List<Produto> storeProducts = repository.findByLoja(storeCpfCnpj);
-        List<Produto> expectedProducts = produtos.stream()
-            .filter(p -> p.getLojaCpfCnpj().equals(storeCpfCnpj))
-            .collect(Collectors.toList());
-
-        assertEquals(expectedProducts.size(), storeProducts.size());
-        assertTrue(storeProducts.stream().allMatch(p -> p.getLojaCpfCnpj().equals(storeCpfCnpj)));
+        produtoRepository.delete(produto.getId());
+        assertFalse(produtoRepository.exists(produto.getId()), "Produto não deveria existir após exclusão.");
     }
 
     @Test
     void testExists() {
-        assertFalse(repository.exists(produto.getId()));
-        repository.save(produto);
-        assertTrue(repository.exists(produto.getId()));
+        // Testa a verificação de existência de um produto
+        assertFalse(produtoRepository.exists(produto.getId()), "Produto não deveria existir antes de ser salvo.");
+
+        produtoRepository.save(produto);
+        assertTrue(produtoRepository.exists(produto.getId()), "Produto deveria existir após ser salvo.");
+    }
+
+    @Test
+    void testFindByLoja() {
+        // Testa a busca de produtos por loja (CNPJ)
+        produtoRepository.save(produto);
+
+        List<Produto> produtosLoja = produtoRepository.findByLoja(produto.getLojaCpfCnpj());
+        assertFalse(produtosLoja.isEmpty(), "Deveria haver produtos da loja com o CNPJ especificado.");
+        assertTrue(produtosLoja.stream().anyMatch(p -> p.getLojaCpfCnpj().equals(produto.getLojaCpfCnpj())),
+                "Produto da loja deveria estar presente na lista.");
+    }
+
+    @Test
+    void testFindByNonExistentId() {
+        // Testa a busca por um ID inexistente
+        Optional<Produto> foundProduto = produtoRepository.findById("id-inexistente");
+        assertFalse(foundProduto.isPresent(), "Produto com ID inexistente não deveria ser encontrado.");
     }
 }

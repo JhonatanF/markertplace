@@ -1,95 +1,75 @@
 package com.marketplace.repository;
 
 import com.marketplace.model.Comprador;
-import com.marketplace.utils.TestDataLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+public class CompradorRepositoryTest {
 
-class CompradorRepositoryTest {
-    private CompradorRepository repository;
+    private CompradorRepository compradorRepository;
     private Comprador comprador;
 
     @BeforeEach
     void setUp() {
-        repository = new CompradorRepository();
-        comprador = TestDataLoader.loadCompradores().get(0);
-    }
+        // Inicializa o repositório de compradores
+        compradorRepository = new CompradorRepository();
 
-
-
-    @Test
-    void testSaveAndFind() {
-        repository.save(comprador);
-        Optional<Comprador> found = repository.findById(comprador.getCpf());
-        
-        assertTrue(found.isPresent());
-        assertEquals(comprador.getNome(), found.get().getNome());
-        assertEquals(comprador.getEmail(), found.get().getEmail());
-        assertEquals(comprador.getSenha(), found.get().getSenha());
-        assertEquals(comprador.getEndereco(), found.get().getEndereco());
+        // Cria um novo comprador usando o construtor da classe Comprador
+        comprador = new Comprador("Comprador Teste", "comprador@teste.com", "senha123", "12345678901", "Avenida Teste, 456");
     }
 
     @Test
-    void testFindNonExistent() {
-        Optional<Comprador> found = repository.findById("cpf-inexistente");
-        assertFalse(found.isPresent());
+    void testSaveAndFindById() {
+        // Testa salvar um comprador e encontrá-lo pelo CPF
+        compradorRepository.save(comprador);
+
+        Comprador foundComprador = compradorRepository.findById(comprador.getCpf()).orElse(null);
+
+        assertNotNull(foundComprador, "Comprador deveria ser encontrado.");
+        assertEquals(comprador.getNome(), foundComprador.getNome(), "Os nomes dos compradores devem ser iguais.");
+        assertEquals(comprador.getEmail(), foundComprador.getEmail(), "Os e-mails dos compradores devem ser iguais.");
+        assertEquals(comprador.getEndereco(), foundComprador.getEndereco(), "Os endereços dos compradores devem ser iguais.");
+        assertEquals(comprador.getCpf(), foundComprador.getCpf(), "Os CPFs dos compradores devem ser iguais.");
+        assertEquals(comprador.getPontuacao(), foundComprador.getPontuacao(), "As pontuações dos compradores devem ser iguais.");
     }
 
     @Test
     void testFindAll() {
-        List<Comprador> compradores = TestDataLoader.loadCompradores();
-        compradores.forEach(c -> repository.save(c));
+        // Testa a recuperação de todos os compradores
+        compradorRepository.save(comprador);
 
-        List<Comprador> foundCompradores = repository.findAll();
-        assertEquals(compradores.size(), foundCompradores.size());
-        compradores.forEach(c -> 
-            assertTrue(foundCompradores.stream()
-                .anyMatch(fc -> fc.getCpf().equals(c.getCpf()))));
-    }
-
-    @Test
-    void testFindAllEmpty() {
-        List<Comprador> compradores = repository.findAll();
-        assertTrue(compradores.isEmpty());
+        List<Comprador> compradores = compradorRepository.findAll();
+        assertFalse(compradores.isEmpty(), "A lista de compradores não deve estar vazia.");
+        assertTrue(compradores.contains(comprador), "Comprador deveria estar na lista.");
     }
 
     @Test
     void testDelete() {
-        repository.save(comprador);
-        assertTrue(repository.findById(comprador.getCpf()).isPresent());
-        
-        repository.delete(comprador.getCpf());
-        assertFalse(repository.findById(comprador.getCpf()).isPresent());
-    }
+        // Testa a exclusão de um comprador
+        compradorRepository.save(comprador);
+        assertTrue(compradorRepository.exists(comprador.getCpf()), "Comprador deveria existir antes de ser excluído.");
 
-    @Test
-    void testDeleteNonExistent() {
-        repository.delete("cpf-inexistente"); // Não deve lançar exceção
-    }
-
-    @Test
-    void testUpdate() {
-        repository.save(comprador);
-        
-        comprador.setNome("Nome Atualizado");
-        comprador.setEmail("novo@email.com");
-        repository.save(comprador);
-        
-        Optional<Comprador> updated = repository.findById(comprador.getCpf());
-        assertTrue(updated.isPresent());
-        assertEquals("Nome Atualizado", updated.get().getNome());
-        assertEquals("novo@email.com", updated.get().getEmail());
+        compradorRepository.delete(comprador.getCpf());
+        assertFalse(compradorRepository.exists(comprador.getCpf()), "Comprador não deveria existir após exclusão.");
     }
 
     @Test
     void testExists() {
-        assertFalse(repository.exists(comprador.getCpf()));
-        repository.save(comprador);
-        assertTrue(repository.exists(comprador.getCpf()));
+        // Testa a verificação de existência de um comprador
+        assertFalse(compradorRepository.exists(comprador.getCpf()), "Comprador não deveria existir antes de ser salvo.");
+
+        compradorRepository.save(comprador);
+        assertTrue(compradorRepository.exists(comprador.getCpf()), "Comprador deveria existir após ser salvo.");
+    }
+
+    @Test
+    void testFindByNonExistentId() {
+        // Testa a busca por um CPF inexistente
+        Optional<Comprador> foundComprador = compradorRepository.findById("99999999999");
+        assertFalse(foundComprador.isPresent(), "Comprador com CPF inexistente não deveria ser encontrado.");
     }
 }

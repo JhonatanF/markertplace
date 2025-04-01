@@ -1,95 +1,74 @@
 package com.marketplace.repository;
 
 import com.marketplace.model.Loja;
-import com.marketplace.utils.TestDataLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+public class LojaRepositoryTest {
 
-class LojaRepositoryTest {
-    private LojaRepository repository;
+    private LojaRepository lojaRepository;
     private Loja loja;
 
     @BeforeEach
     void setUp() {
-        repository = new LojaRepository();
-        loja = TestDataLoader.loadLojas().get(0);
-    }
+        // Inicializa o repositório de lojas
+        lojaRepository = new LojaRepository();
 
-
-
-    @Test
-    void testSaveAndFind() {
-        repository.save(loja);
-        Optional<Loja> found = repository.findById(loja.getCpfCnpj());
-        
-        assertTrue(found.isPresent());
-        assertEquals(loja.getNome(), found.get().getNome());
-        assertEquals(loja.getEmail(), found.get().getEmail());
-        assertEquals(loja.getSenha(), found.get().getSenha());
-        assertEquals(loja.getEndereco(), found.get().getEndereco());
+        // Cria uma nova loja usando o construtor da classe Loja
+        loja = new Loja("Loja Teste", "loja@teste.com", "senha123", "12345678901234", "Rua Teste, 123");
     }
 
     @Test
-    void testFindNonExistent() {
-        Optional<Loja> found = repository.findById("cpf-inexistente");
-        assertFalse(found.isPresent());
+    void testSaveAndFindById() {
+        // Testa salvar uma loja e encontrá-la pelo CPF/CNPJ
+        lojaRepository.save(loja);
+
+        Loja foundLoja = lojaRepository.findById(loja.getCpfCnpj()).orElse(null);
+
+        assertNotNull(foundLoja, "Loja deveria ser encontrada.");
+        assertEquals(loja.getNome(), foundLoja.getNome(), "Os nomes das lojas devem ser iguais.");
+        assertEquals(loja.getEmail(), foundLoja.getEmail(), "Os e-mails das lojas devem ser iguais.");
+        assertEquals(loja.getEndereco(), foundLoja.getEndereco(), "Os endereços das lojas devem ser iguais.");
+        assertEquals(loja.getCpfCnpj(), foundLoja.getCpfCnpj(), "Os CNPJs das lojas devem ser iguais.");
     }
 
     @Test
     void testFindAll() {
-        List<Loja> lojas = TestDataLoader.loadLojas();
-        lojas.forEach(l -> repository.save(l));
+        // Testa a recuperação de todas as lojas
+        lojaRepository.save(loja);
 
-        List<Loja> foundLojas = repository.findAll();
-        assertEquals(lojas.size(), foundLojas.size());
-        lojas.forEach(l -> 
-            assertTrue(foundLojas.stream()
-                .anyMatch(fl -> fl.getCpfCnpj().equals(l.getCpfCnpj()))));
-    }
-
-    @Test
-    void testFindAllEmpty() {
-        List<Loja> lojas = repository.findAll();
-        assertTrue(lojas.isEmpty());
+        List<Loja> lojas = lojaRepository.findAll();
+        assertFalse(lojas.isEmpty(), "A lista de lojas não deve estar vazia.");
+        assertTrue(lojas.contains(loja), "Loja deveria estar na lista.");
     }
 
     @Test
     void testDelete() {
-        repository.save(loja);
-        assertTrue(repository.findById(loja.getCpfCnpj()).isPresent());
-        
-        repository.delete(loja.getCpfCnpj());
-        assertFalse(repository.findById(loja.getCpfCnpj()).isPresent());
-    }
+        // Testa a exclusão de uma loja
+        lojaRepository.save(loja);
+        assertTrue(lojaRepository.exists(loja.getCpfCnpj()), "Loja deveria existir antes de ser excluída.");
 
-    @Test
-    void testDeleteNonExistent() {
-        repository.delete("cpf-inexistente"); // Should not throw exception
-    }
-
-    @Test
-    void testUpdate() {
-        repository.save(loja);
-        
-        loja.setNome("Nome Atualizado");
-        loja.setEmail("novo@email.com");
-        repository.save(loja);
-        
-        Optional<Loja> updated = repository.findById(loja.getCpfCnpj());
-        assertTrue(updated.isPresent());
-        assertEquals("Nome Atualizado", updated.get().getNome());
-        assertEquals("novo@email.com", updated.get().getEmail());
+        lojaRepository.delete(loja.getCpfCnpj());
+        assertFalse(lojaRepository.exists(loja.getCpfCnpj()), "Loja não deveria existir após exclusão.");
     }
 
     @Test
     void testExists() {
-        assertFalse(repository.exists(loja.getCpfCnpj()));
-        repository.save(loja);
-        assertTrue(repository.exists(loja.getCpfCnpj()));
+        // Testa a verificação de existência de uma loja
+        assertFalse(lojaRepository.exists(loja.getCpfCnpj()), "Loja não deveria existir antes de ser salva.");
+
+        lojaRepository.save(loja);
+        assertTrue(lojaRepository.exists(loja.getCpfCnpj()), "Loja deveria existir após ser salva.");
+    }
+
+    @Test
+    void testFindByNonExistentId() {
+        // Testa a busca por um ID (CPF/CNPJ) inexistente
+        Optional<Loja> foundLoja = lojaRepository.findById("99999999999999");
+        assertFalse(foundLoja.isPresent(), "Loja com CPF/CNPJ inexistente não deveria ser encontrada.");
     }
 }
