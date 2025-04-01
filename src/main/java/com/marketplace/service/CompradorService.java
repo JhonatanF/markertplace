@@ -40,4 +40,10 @@ public class CompradorService {
         }
         repository.delete(cpf);
     }
+
+    public void removerCompradores() {
+        for (Comprador comprador : repository.findAll()) {
+            remover(comprador.getCpf());
+        }
+    }
 }

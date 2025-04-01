@@ -4,7 +4,7 @@ Um sistema de marketplace simplificado implementado em Java puro, seguindo o pad
 
 ## Requisitos
 
-- Java 11 ou superior
+- Java 16 ou superior
 - Maven 3.6 ou superior
 
 ## Como Compilar e Executar
