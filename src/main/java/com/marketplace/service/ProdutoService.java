@@ -59,4 +59,10 @@ public class ProdutoService {
         }
         repository.delete(id);
     }
+
+    public void removerProdutos() {
+        for (Produto produto : repository.findAll()) {
+            remover(produto.getId());
+        }
+    }
 }

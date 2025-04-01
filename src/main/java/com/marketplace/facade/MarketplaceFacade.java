@@ -122,4 +122,24 @@ public class MarketplaceFacade {
     public void removerAdmin(String id) {
         adminService.remover(id);
     }
+
+    // Operações de remoção geral
+
+    protected void removerAdmins() {
+        adminService.removerAdmins();
+    }
+
+    protected void removerCompradores () {
+        compradorService.removerCompradores();
+    }
+
+    protected void removerProdutos () {
+        produtoService.removerProdutos();
+    }
+
+    protected void removerLojas () {
+        lojaService.removerLojas();
+    }
+
+
 }

@@ -1,6 +1,7 @@
 package com.marketplace.service;
 
 import com.marketplace.model.Admin;
+import com.marketplace.model.Comprador;
 import com.marketplace.repository.AdminRepository;
 
 import java.util.List;
@@ -40,5 +41,11 @@ public class AdminService {
             throw new IllegalArgumentException("Administrador não encontrado");
         }
         repository.delete(cpf);
+    }
+
+    public void removerAdmins() {
+        for (Admin admin : repository.findAll()) {
+            remover(admin.getCpf());
+        }
     }
 }

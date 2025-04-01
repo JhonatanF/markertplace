@@ -40,4 +40,10 @@ public class LojaService {
         }
         repository.delete(cpfCnpj);
     }
+
+    public void removerLojas () {
+        for (Loja loja : repository.findAll()) {
+            remover(loja.getCpfCnpj());
+        }
+    }
 }
