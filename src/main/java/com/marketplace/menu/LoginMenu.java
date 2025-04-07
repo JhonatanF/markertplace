@@ -55,7 +55,7 @@ public class LoginMenu extends Menu{
                 System.out.println("Loja não encontrada");
                 return;
             } else {
-                if (loja.get().getCpfCnpj().equals(cpfCnpj)) {
+                if (loja.get().getCpfCnpj().equals(cpfCnpj) && loja.get().getSenha().equals(senha)) {
                     System.out.println("Login realizado com sucesso, Bem vindo(a) " + loja.get().getNome());
                     new LojaLoginMenu(scanner, facade, loja.get()).show();
                     option = 0;
@@ -87,7 +87,7 @@ public class LoginMenu extends Menu{
                 System.out.println("Loja não encontrada");
                 return;
             } else {
-                if (comprador.get().getCpf().equals(cpf)) {
+                if (comprador.get().getCpf().equals(cpf) && comprador.get().getSenha().equals(senha)) {
                     System.out.println("Login realizado com sucesso, Bem vindo(a) " + comprador.get().getNome());
                     new CompradorLoginMenu(scanner, facade, comprador.get()).show();
                     option = 0;
@@ -119,7 +119,7 @@ public class LoginMenu extends Menu{
                 System.out.println("Loja não encontrada");
                 return;
             } else {
-                if (admin.get().getCpf().equals(cpf)) {
+                if (admin.get().getCpf().equals(cpf) && admin.get().getSenha().equals(senha)) {
                     System.out.println("Login realizado com sucesso, Bem vindo(a) " + admin.get().getNome());
                     new AdminLoginMenu(scanner, facade).show();
                     option = 0;

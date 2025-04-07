@@ -2,11 +2,6 @@ package com.marketplace.menu;
 
 import com.marketplace.facade.MarketplaceFacade;
 import com.marketplace.model.Comprador;
-import com.marketplace.model.Loja;
-import com.marketplace.model.Produto;
-
-import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
 
 public class CompradorLoginMenu extends Menu{
@@ -22,8 +17,8 @@ public class CompradorLoginMenu extends Menu{
     @Override
     protected void initializeOptions() {
         addOption(1, new MenuOption() {
-            public String getDescription() { return "Listar Lojas"; }
-            public void execute() { listarLojas(); }
+            public String getDescription() { return "Navegar Pelo Sistema"; }
+            public void execute() { new CompraMenu(scanner,"Menu de Compra",facade,comprador); }
         });
 
         addOption(2, new MenuOption() {
@@ -35,62 +30,6 @@ public class CompradorLoginMenu extends Menu{
             public String getDescription() { return "Sair"; }
             public void execute() { }
         });
-    }
-
-    private void listarLojas() {
-        var lojas = facade.listarLojas();
-        if (lojas.isEmpty()) {
-            System.out.println("Nenhuma loja cadastrada");
-            return;
-        }
-        lojas.forEach(System.out::println);
-
-        int option = 1;
-
-        do{
-            System.out.println("OPÇÕES");
-            System.out.println("1. Visualizar Produtos da Loja");
-            System.out.println("0. Voltar");
-
-            option = scanner.nextInt();
-            scanner.nextLine();
-
-            if(option == 1){
-                System.out.print("Digite o CPF/CNPJ da loja:");
-                String cpfCnpj = scanner.nextLine();
-
-                List<Produto> produtos = facade.listarProdutosDaLoja(cpfCnpj);
-
-                if (produtos.isEmpty()) {
-                    System.out.println("Nenhum produto encontrado para esta loja");
-                    return;
-                }
-
-                produtos.forEach(System.out::println);
-
-                System.out.println("OPÇÕES");
-                System.out.println("1. Comprar Produto");
-                System.out.println("0. Voltar");
-
-                option = scanner.nextInt();
-                scanner.nextLine();
-
-                if(option == 1){
-                    System.out.print("Digite o Id do produto:");
-                    String idProduto = scanner.nextLine();
-
-                    Optional<Produto> produto = facade.buscarProduto(idProduto);
-
-                    if (!produto.isEmpty()) {
-                        Produto prod = produto.get();
-                        prod = facade.atualizarProduto(prod.getId(),prod.getNome(),prod.getValor(),prod.getTipo(),
-                                (prod.getQuantidade()-1),prod.getMarca(),prod.getDescricao(),cpfCnpj);
-
-                        System.out.println("Compra Realizada com Sucesso");
-                    }
-                }
-            }
-        }while (option != 0);
     }
 
     private void atualizarComprador() {

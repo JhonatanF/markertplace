@@ -29,6 +29,8 @@ public abstract class Menu {
                 int choice = scanner.nextInt();
                 scanner.nextLine(); // Consume newline
 
+                clearScreen();
+
                 if (choice == 0) {
                     break;
                 }
@@ -52,5 +54,10 @@ public abstract class Menu {
 
     protected void addOption(int key, MenuOption option) {
         options.put(key, option);
+    }
+
+    public static void clearScreen() {  
+        System.out.print("\033[H\033[2J");  
+        System.out.flush();  
     }
 }
