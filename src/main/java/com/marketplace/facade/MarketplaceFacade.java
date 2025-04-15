@@ -87,7 +87,16 @@ public class MarketplaceFacade {
     }
 
     public List<Produto> listarProdutosDaLoja(String lojaCpfCnpj) {
-        return produtoService.listarPorLoja(lojaCpfCnpj);
+        List<Produto> produtosDaLoja = produtoService.listarPorLoja(lojaCpfCnpj);
+        Optional<Loja> busca = buscarLoja(lojaCpfCnpj);
+        Loja loja = busca.get();
+
+        System.out.println("\nPRODUTOS DA LOJA: " + loja.getNome());
+        for (Produto produto : produtosDaLoja) {
+            System.out.println(produto.getNome() + " | valor:" + produto.getValor() + " | estoque:" + produto.getQuantidade() + " | id:" + produto.getId());
+        }
+        System.out.println();
+        return produtosDaLoja;
     }
 
     public Produto atualizarProduto(String id, String nome, double valor, String tipo, 

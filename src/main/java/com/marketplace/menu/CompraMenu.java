@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 import com.marketplace.facade.MarketplaceFacade;
 import com.marketplace.model.Comprador;
+import com.marketplace.model.Loja;
 import com.marketplace.model.Produto;
 
 public class CompraMenu extends Menu{
@@ -15,12 +16,11 @@ public class CompraMenu extends Menu{
     private List<Produto> carrinho;
 
 
-    protected CompraMenu(Scanner scanner, String title, MarketplaceFacade facade, Comprador comprador) {
-        super(scanner, title);
-        //TODO Auto-generated constructor stub
+    protected CompraMenu(Scanner scanner, MarketplaceFacade facade, Comprador comprador, List<Produto> carrinho) {
+        super(scanner, "MENU DE COMPRA");
         this.facade = facade;
         this.comprador = comprador;
-        this.carrinho = null;
+        this.carrinho = carrinho;
     }
 
     @Override
@@ -36,13 +36,8 @@ public class CompraMenu extends Menu{
         });
 
         addOption(3, new MenuOption() {
-            public String getDescription() { return "Buscar Produto"; }
-            public void execute() { buscarProduto(); }
-        });
-
-        addOption(4, new MenuOption() {
             public String getDescription() { return "Gerenciar Carrinho"; }
-            public void execute() { visualizarCarrinho(); }
+            public void execute() { new CarrinhoMenu(scanner, facade, comprador, carrinho).show(); }
         });
         
         addOption(0, new MenuOption() {
@@ -57,7 +52,10 @@ public class CompraMenu extends Menu{
             System.out.println("Nenhuma loja cadastrada");
             return;
         }
-        lojas.forEach(System.out::println);
+        System.out.println("\nLOJAS CADASTRADAS:");
+        for (Loja loja : lojas) {
+            System.out.println(loja.getNome() + " | CNPJ:" + loja.getCpfCnpj() + " | Contato:" + loja.getEmail());
+        }
     }
 
     public void visualizarProdutos(){
@@ -76,7 +74,7 @@ public class CompraMenu extends Menu{
                     System.out.println("Nenhum produto encontrado para esta loja");
                     return;
                 }else{
-                    produtos.forEach(System.out::println);
+                    //produtos.forEach(System.out::println); //aparentemente tava printando duas vezes
                     System.out.println("OPÇÕES");
                     System.out.println("1. Comprar Produto");
                     System.out.println("0. Voltar");
@@ -89,14 +87,17 @@ public class CompraMenu extends Menu{
             if(option == 1){
                 System.out.print("Digite o Id do produto:");
                 String idProduto = scanner.nextLine();
+
                 System.out.print("Digite a Quantidade: ");
                 int qtdProduto = scanner.nextInt();
                 scanner.nextLine();
 
                 Optional<Produto> produto = facade.buscarProduto(idProduto);
 
-                if (!produto.isEmpty()) {
+                if (produto.isPresent()) {
                     Produto prod = produto.get();
+
+                    // atualizando quantidade do produto
                     prod = facade.atualizarProduto(prod.getId(),prod.getNome(),prod.getValor(),prod.getTipo(),
                             (prod.getQuantidade()-qtdProduto),prod.getMarca(),prod.getDescricao(),cpfCnpj);
 
@@ -109,32 +110,34 @@ public class CompraMenu extends Menu{
                     }else{
                         carrinho.add(produtoComprado);
                     }
-                    System.out.println("Compra Realizada com Sucesso");
+                    System.out.println("Compra Realizada com Sucesso!\n");
 
                     System.out.println("OPÇÕES");
                     System.out.println("1. Comprar Outro Produto");
                     System.out.println("2. Selecionar outra Loja");
+                    System.out.println("3. Gerenciar Carrinho");
                     System.out.println("0. Sair");
+                    option = scanner.nextInt();
+                    scanner.nextLine();
 
-                    if(option == 1){
-                        produtos.forEach(System.out::println);
-                    }
+                    if (option == 1){exibirProdutos(produtos);}
+
                 }else{
                     System.out.println("Produto não existe");
                 }
             }
+            if(option == 3){
+                new CarrinhoMenu(scanner,facade,comprador,carrinho).show();
+            }
         }while (option > 0 && option < 3);
     }
 
-    public void buscarProduto(){
-        //TODO
-    }
-    
-    public void visualizarCarrinho(){
-        if(carrinho == null){
-            System.out.println("Não existem itens no carrinho");
-        }else{
-            carrinho.forEach(System.out::println);
+    private void exibirProdutos(List<Produto> produtos){
+
+        System.out.println("Produtos da Loja:");
+        for (Produto produto : produtos) {
+            System.out.println(produto.getNome() + " | valor:" + produto.getValor() + " | id:" + produto.getId());
         }
+        System.out.println();
     }
 }

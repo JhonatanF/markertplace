@@ -40,7 +40,7 @@ public abstract class Menu {
                     try {
                         option.execute();
                     } catch (Exception e) {
-                        System.out.println("Erro: " + e.getMessage());
+                        System.out.println("Erro nas Opções: " + e.getMessage());
                     }
                 } else {
                     System.out.println("Opção inválida!");
