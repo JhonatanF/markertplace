@@ -18,7 +18,7 @@ public class CompradorLoginMenu extends Menu{
     protected void initializeOptions() {
         addOption(1, new MenuOption() {
             public String getDescription() { return "Navegar Pelo Sistema"; }
-            public void execute() { new CompraMenu(scanner,"Menu de Compra",facade,comprador); }
+            public void execute() { new CompraMenu(scanner,facade,comprador,null).show(); }
         });
 
         addOption(2, new MenuOption() {

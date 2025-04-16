@@ -2,7 +2,7 @@ package com.marketplace.model;
 
 import java.io.Serializable;
 
-public class Produto implements Serializable{
+public class Produto implements Serializable, Cloneable{
     private static final long serialVersionUID = 1L;
     
     private String id;
@@ -101,6 +101,7 @@ public class Produto implements Serializable{
         this.lojaCpfCnpj = lojaCpfCnpj;
     }
 
+    @Override
     public Object clone(){  
         try{  
             return super.clone();  
