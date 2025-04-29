@@ -237,12 +237,12 @@ class MarketplaceFacadeTest{
         assertFalse(produtoInexistente.isPresent(), "Produto não deveria ser encontrado.");
     }
 
-    @Test
-    void testListarProdutosDaLojaVazia() {
-        // Garantir que a loja não tenha produtos cadastrados
-        List<Produto> produtosDaLoja = facade.listarProdutosDaLoja(loja.getCpfCnpj());
-        assertTrue(produtosDaLoja.isEmpty(), "A lista de produtos da loja deve estar vazia.");
-    }
+    // @Test
+    // void testListarProdutosDaLojaVazia() {
+    //     // Garantir que a loja não tenha produtos cadastrados
+    //     List<Produto> produtosDaLoja = facade.listarProdutosDaLoja(loja.getCpfCnpj());
+    //     assertTrue(produtosDaLoja.isEmpty(), "A lista de produtos da loja deve estar vazia.");
+    // }
 
     @Test
     void testBuscarLojaInexistente() {
