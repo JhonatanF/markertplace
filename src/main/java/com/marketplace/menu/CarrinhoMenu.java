@@ -44,13 +44,13 @@ public class CarrinhoMenu extends Menu {
 
     private void removerItemDoCarrinho() {
 
-        System.out.print("Digite o ID do item:");
-        String id = scanner.nextLine();
+        System.out.print("Digite o nome do item:");
+        String nome = scanner.nextLine();
         int indexToRemove = -1;
         boolean firstItem = true;
 
         for (int i = 0; i < carrinho.size(); i++) {
-            if (carrinho.get(i).getId().equals(id)) {
+            if (carrinho.get(i).getNome().equals(nome)) {
                 if (firstItem) {
                     indexToRemove = i;
                     System.out.println("Item removido com sucesso!");
@@ -60,7 +60,7 @@ public class CarrinhoMenu extends Menu {
         }
         if (indexToRemove != -1) carrinho.remove(indexToRemove);
         else {
-            System.out.println("O ID digitado não corresponde a nenhum item");
+            System.out.println("O nome digitado não corresponde a nenhum item");
         }
     }
 

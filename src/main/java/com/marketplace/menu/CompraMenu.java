@@ -39,6 +39,11 @@ public class CompraMenu extends Menu{
             public String getDescription() { return "Gerenciar Carrinho"; }
             public void execute() { new CarrinhoMenu(scanner, facade, comprador, carrinho).show(); }
         });
+
+        addOption(4, new MenuOption() {
+            public String getDescription() { return "Finalizar Compra"; }
+            public void execute() { finalizarCompra(); }
+        });
         
         addOption(0, new MenuOption() {
             public String getDescription() { return "Sair"; }
@@ -74,10 +79,10 @@ public class CompraMenu extends Menu{
                     System.out.println("Nenhum produto encontrado para esta loja");
                     return;
                 }else{
-                    //produtos.forEach(System.out::println); //aparentemente tava printando duas vezes
                     System.out.println("OPÇÕES");
                     System.out.println("1. Comprar Produto");
                     System.out.println("0. Voltar");
+                    System.out.print("Escolha uma opção: ");
     
                     option = scanner.nextInt();
                     scanner.nextLine();
@@ -85,14 +90,14 @@ public class CompraMenu extends Menu{
             }
 
             if(option == 1){
-                System.out.print("Digite o Id do produto:");
-                String idProduto = scanner.nextLine();
+                System.out.print("Digite o Nome do produto: ");
+                String nomeProduto = scanner.nextLine();
 
                 System.out.print("Digite a Quantidade: ");
                 int qtdProduto = scanner.nextInt();
                 scanner.nextLine();
 
-                Optional<Produto> produto = facade.buscarProduto(idProduto);
+                Optional<Produto> produto = facade.buscarProdutoPorNome(nomeProduto);
 
                 if (produto.isPresent()) {
                     Produto prod = produto.get();
@@ -110,13 +115,14 @@ public class CompraMenu extends Menu{
                     }else{
                         carrinho.add(produtoComprado);
                     }
-                    System.out.println("Compra Realizada com Sucesso!\n");
+                    System.out.println("Produto adicionado ao carrinho!\n");
 
                     System.out.println("OPÇÕES");
                     System.out.println("1. Comprar Outro Produto");
                     System.out.println("2. Selecionar outra Loja");
                     System.out.println("3. Gerenciar Carrinho");
                     System.out.println("0. Sair");
+                    System.out.print("Escolha uma opção: ");
                     option = scanner.nextInt();
                     scanner.nextLine();
 
@@ -139,5 +145,50 @@ public class CompraMenu extends Menu{
             System.out.println(produto.getNome() + " | valor:" + produto.getValor() + " | id:" + produto.getId());
         }
         System.out.println();
+    }
+
+    private void finalizarCompra() {
+        if (!carrinho.isEmpty()) {
+            System.out.println("\n== FINALIZANDO COMPRA ==");
+            System.out.println("Produtos:");
+            double total = 0;
+            int pontuacao = comprador.getPontuacao();
+            for (Produto produto : carrinho) {
+                total += produto.getValor() * produto.getQuantidade();
+                System.out.println(produto.getNome() + " | valor:" + produto.getValor() + " | quantidade:" + produto.getQuantidade());
+            }
+            System.out.println("Total: " + total);
+
+            if (pontuacao > 0) {
+                System.out.println("\nVocê tem " + pontuacao + " pontos de fidelidade.");
+                System.out.println("Deseja Aplicar agora? (S/N)");
+                String respostaDesconto = scanner.nextLine();
+                if (respostaDesconto.equals("S")) {
+                    int descontoPorPonto = 2;
+                    System.out.println("Desconto pela pontuação fidelidade: $" + pontuacao * descontoPorPonto);
+                    total -= pontuacao * descontoPorPonto;
+                    System.out.println("Total: " + total);
+                }
+            }
+
+            System.out.println("\nOPÇÕES");
+            System.out.println("1. Confirmar compra");
+            System.out.println("0. Voltar");
+            System.out.print("Escolha uma opção: ");
+            int option = scanner.nextInt();
+            scanner.nextLine();
+
+            if (option == 1) {
+                int gastoPara1Ponto = 50; // 1 ponto a cada 50 reais em compras
+                int bonus_pontuacao = (int) ((total - total % gastoPara1Ponto) / gastoPara1Ponto);
+                comprador.setPontuacao(pontuacao + bonus_pontuacao);
+                System.out.println("Compra Realizada com Sucesso! " + bonus_pontuacao + " pontos adicionados à sua pontuação");
+
+                carrinho.clear();
+            }
+        }
+        else {
+            System.out.println("\nO carrinho está vazio!");
+        }
     }
 }

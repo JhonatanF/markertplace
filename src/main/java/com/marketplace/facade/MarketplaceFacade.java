@@ -82,6 +82,15 @@ public class MarketplaceFacade {
         return produtoService.buscarPorId(id);
     }
 
+    public Optional<Produto> buscarProdutoPorNome(String nome) {
+        for (Produto prod : produtoService.listarTodos()) {
+            if (prod.getNome().equals(nome)) {
+                return Optional.of(prod);
+            }
+        }
+        return Optional.empty();
+    }
+
     public List<Produto> listarProdutos() {
         return produtoService.listarTodos();
     }

@@ -94,8 +94,9 @@ public class LoginMenu extends Menu{
                 } else {
                     System.out.println("Senha Incorreta!");
                     System.out.println("\n=== OPÇÕES ===");
-                    System.out.print("1. Tentar Novamente");
-                    System.out.print("0. Sair");
+                    System.out.println("1. Tentar Novamente");
+                    System.out.println("0. Sair");
+                    System.out.print("Escolha uma opção: ");
                     option = scanner.nextInt();
                     scanner.nextLine(); // Consume newline
                 }
