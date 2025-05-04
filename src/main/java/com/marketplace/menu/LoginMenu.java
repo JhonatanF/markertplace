@@ -84,7 +84,7 @@ public class LoginMenu extends Menu{
             Optional<Comprador> comprador = facade.buscarComprador(cpf);
 
             if (comprador.isEmpty()) {
-                System.out.println("Loja não encontrada");
+                System.out.println("Cliente não encontrado");
                 return;
             } else {
                 if (comprador.get().getCpf().equals(cpf) && comprador.get().getSenha().equals(senha)) {
@@ -117,7 +117,7 @@ public class LoginMenu extends Menu{
             Optional<Admin> admin = facade.buscarAdmin(cpf);
 
             if (admin.isEmpty()) {
-                System.out.println("Loja não encontrada");
+                System.out.println("Admin não encontrado");
                 return;
             } else {
                 if (admin.get().getCpf().equals(cpf) && admin.get().getSenha().equals(senha)) {

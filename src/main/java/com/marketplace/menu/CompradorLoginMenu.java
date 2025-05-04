@@ -2,6 +2,9 @@ package com.marketplace.menu;
 
 import com.marketplace.facade.MarketplaceFacade;
 import com.marketplace.model.Comprador;
+import com.marketplace.model.Produto;
+
+import java.util.List;
 import java.util.Scanner;
 
 public class CompradorLoginMenu extends Menu{
@@ -18,7 +21,7 @@ public class CompradorLoginMenu extends Menu{
     protected void initializeOptions() {
         addOption(1, new MenuOption() {
             public String getDescription() { return "Navegar Pelo Sistema"; }
-            public void execute() { new CompraMenu(scanner,facade,comprador,null).show(); }
+            public void execute() { new CompraMenu(scanner,facade,comprador).show(); }
         });
 
         addOption(2, new MenuOption() {
@@ -43,6 +46,7 @@ public class CompradorLoginMenu extends Menu{
         String email = comprador.getEmail();
         String senha = comprador.getSenha();
         String endereco = comprador.getEndereco();
+        List<Produto> carrinho = comprador.getCarrinho();
 
         int option;
 
@@ -56,23 +60,24 @@ public class CompradorLoginMenu extends Menu{
 
             option = scanner.nextInt();
             scanner.nextLine(); // Consume newline
-        }while(option < 1 || option > 4);
 
-        System.out.println("Novo dado:");
-        String novoDado = scanner.nextLine();
+            if(option >= 1 && option <= 4){
 
-        if(option > 0){
-            if(option == 1){
-                nome = novoDado;
-            } else if (option == 2) {
-                email = novoDado;
-            } else if (option == 3) {
-                senha = novoDado;
-            } else if (option == 4) {
-                endereco = novoDado;
+                System.out.println("Novo dado:");
+                String novoDado = scanner.nextLine();
+
+                if(option == 1){
+                    nome = novoDado;
+                } else if (option == 2) {
+                    email = novoDado;
+                } else if (option == 3) {
+                    senha = novoDado;
+                } else {
+                    endereco = novoDado;
+                }
+                this.comprador = facade.atualizarComprador(nome, email, senha, cpf, endereco, carrinho);
+                System.out.println("Comprador atualizado com sucesso: " + comprador.getNome());
             }
-            this.comprador = facade.atualizarComprador(nome, email, senha, cpf, endereco);
-            System.out.println("Comprador atualizado com sucesso: " + comprador.getNome());
-        }
+        }while(option >= 1 && option <= 4);
     }
 }

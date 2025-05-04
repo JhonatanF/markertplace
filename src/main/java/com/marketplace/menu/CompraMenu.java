@@ -16,11 +16,11 @@ public class CompraMenu extends Menu{
     private List<Produto> carrinho;
 
 
-    protected CompraMenu(Scanner scanner, MarketplaceFacade facade, Comprador comprador, List<Produto> carrinho) {
+    protected CompraMenu(Scanner scanner, MarketplaceFacade facade, Comprador comprador) {
         super(scanner, "MENU DE COMPRA");
         this.facade = facade;
         this.comprador = comprador;
-        this.carrinho = carrinho;
+        this.carrinho = comprador.getCarrinho();
     }
 
     @Override
@@ -114,6 +114,7 @@ public class CompraMenu extends Menu{
                         carrinho.add(produtoComprado);
                     }else{
                         carrinho.add(produtoComprado);
+                        facade.atualizarCarrinhoDoComprador(comprador,carrinho);
                     }
                     System.out.println("Produto adicionado ao carrinho!\n");
 
@@ -185,6 +186,7 @@ public class CompraMenu extends Menu{
                 System.out.println("Compra Realizada com Sucesso! " + bonus_pontuacao + " pontos adicionados à sua pontuação");
 
                 carrinho.clear();
+                facade.atualizarCarrinhoDoComprador(comprador,carrinho);
             }
         }
         else {

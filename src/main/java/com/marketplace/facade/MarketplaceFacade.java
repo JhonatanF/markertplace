@@ -50,7 +50,7 @@ public class MarketplaceFacade {
 
     // Operações de Comprador
     public Comprador cadastrarComprador(String nome, String email, String senha, String cpf, String endereco) {
-        Comprador comprador = new Comprador(nome, email, senha, cpf, endereco);
+        Comprador comprador = new Comprador(nome, email, senha, cpf, endereco, null);
         return compradorService.cadastrar(comprador);
     }
 
@@ -62,8 +62,13 @@ public class MarketplaceFacade {
         return compradorService.listarTodos();
     }
 
-    public Comprador atualizarComprador(String nome, String email, String senha, String cpf, String endereco) {
-        Comprador comprador = new Comprador(nome, email, senha, cpf, endereco);
+    public Comprador atualizarComprador(String nome, String email, String senha, String cpf, String endereco, List<Produto> carrinho) {
+        Comprador comprador = new Comprador(nome, email, senha, cpf, endereco, carrinho);
+        return compradorService.atualizar(comprador);
+    }
+
+    public Comprador atualizarCarrinhoDoComprador(Comprador comprador, List<Produto> carrinho) {
+        comprador.setCarrinho(carrinho);
         return compradorService.atualizar(comprador);
     }
 

@@ -2,6 +2,8 @@ package com.marketplace.menu;
 
 import com.marketplace.facade.MarketplaceFacade;
 import com.marketplace.model.Comprador;
+
+import java.util.Optional;
 import java.util.Scanner;
 
 public class CompradorMenu extends Menu {
@@ -89,6 +91,8 @@ public class CompradorMenu extends Menu {
             return;
         }
 
+        Comprador comp = facade.buscarComprador(cpf).get();
+
         System.out.print("Novo nome: ");
         String nome = scanner.nextLine();
         System.out.print("Novo email: ");
@@ -98,7 +102,7 @@ public class CompradorMenu extends Menu {
         System.out.print("Novo endereço: ");
         String endereco = scanner.nextLine();
 
-        Comprador comprador = facade.atualizarComprador(nome, email, senha, cpf, endereco);
+        Comprador comprador = facade.atualizarComprador(nome, email, senha, cpf, endereco, comp.getCarrinho());
         System.out.println("Comprador atualizado com sucesso: " + comprador.getNome());
     }
 

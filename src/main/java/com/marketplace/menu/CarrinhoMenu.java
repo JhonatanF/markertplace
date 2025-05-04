@@ -28,7 +28,7 @@ public class CarrinhoMenu extends Menu {
 
         addOption(2,new MenuOption() {
             public String getDescription() { return "Adicionar mais itens";}
-            public void execute() {new CompraMenu(scanner,facade,comprador,carrinho).show();}
+            public void execute() {new CompraMenu(scanner,facade,comprador).show();}
         });
 
         addOption(3,new MenuOption() {
@@ -58,7 +58,10 @@ public class CarrinhoMenu extends Menu {
                 }
             }
         }
-        if (indexToRemove != -1) carrinho.remove(indexToRemove);
+        if (indexToRemove != -1) {
+            carrinho.remove(indexToRemove);
+            facade.atualizarCarrinhoDoComprador(comprador,carrinho);
+        }
         else {
             System.out.println("O nome digitado não corresponde a nenhum item");
         }
