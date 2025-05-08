@@ -28,3 +28,4 @@ target/
 # Data files
 *.dat
 *.json
+*_v2.json

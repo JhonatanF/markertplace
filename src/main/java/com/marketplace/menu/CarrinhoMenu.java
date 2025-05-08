@@ -50,7 +50,7 @@ public class CarrinhoMenu extends Menu {
         boolean firstItem = true;
 
         for (int i = 0; i < carrinho.size(); i++) {
-            if (carrinho.get(i).getNome().equals(nome)) {
+            if (carrinho.get(i).getNome().equalsIgnoreCase(nome)) {
                 if (firstItem) {
                     indexToRemove = i;
                     System.out.println("Item removido com sucesso!");

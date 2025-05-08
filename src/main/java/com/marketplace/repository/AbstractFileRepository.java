@@ -1,11 +1,13 @@
 package com.marketplace.repository;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public abstract class AbstractFileRepository<T, ID> implements Repository<T, ID> {
     protected final String filename;
@@ -17,26 +19,33 @@ public abstract class AbstractFileRepository<T, ID> implements Repository<T, ID>
         loadFromFile();
     }
 
-    @SuppressWarnings("unchecked")
     private void loadFromFile() {
         File file = new File(filename);
         if (file.exists()) {
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                entities = (Map<ID, T>) ois.readObject();
-            } catch (IOException | ClassNotFoundException e) {
-                System.err.println("Erro ao carregar dados do arquivo: " + e.getMessage());
+            try (BufferedReader reader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
+                String jsonStr = reader.lines().collect(Collectors.joining("\n"));
+                entities = parseJsonToMap(jsonStr);
+            } catch (IOException e) {
+                System.err.println("Error loading data from file: " + e.getMessage());
                 entities = new HashMap<>();
             }
         }
     }
 
     private void saveToFile() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
-            oos.writeObject(entities);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, StandardCharsets.UTF_8))) {
+            String jsonStr = convertMapToJson();
+            writer.write(jsonStr);
         } catch (IOException e) {
-            System.err.println("Erro ao salvar dados no arquivo: " + e.getMessage());
+            System.err.println("Error saving data to file: " + e.getMessage());
         }
     }
+
+    protected abstract Map<ID, T> parseJsonToMap(String json);
+    protected abstract String convertMapToJson();
+    protected abstract ID getId(T entity);
+    protected abstract Class<ID> getIdClass();
+    protected abstract Class<T> getEntityClass();
 
     @Override
     public T save(T entity) {
@@ -66,6 +75,4 @@ public abstract class AbstractFileRepository<T, ID> implements Repository<T, ID>
     public boolean exists(ID id) {
         return entities.containsKey(id);
     }
-
-    protected abstract ID getId(T entity);
 }

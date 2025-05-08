@@ -1,6 +1,7 @@
 package com.marketplace.model;
 
 public class Admin extends Usuario {
+    private static final long serialVersionUID = 1L;
 
     private String cpf;
 

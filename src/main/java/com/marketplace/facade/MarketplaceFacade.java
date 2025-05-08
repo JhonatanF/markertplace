@@ -84,7 +84,7 @@ public class MarketplaceFacade {
 
     public Optional<Produto> buscarProdutoPorNome(String nome) {
         for (Produto prod : produtoService.listarTodos()) {
-            if (prod.getNome().equals(nome)) {
+            if (prod.getNome().equalsIgnoreCase(nome)) {
                 return Optional.of(prod);
             }
         }
