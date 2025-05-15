@@ -19,7 +19,7 @@ public abstract class AbstractFileRepository<T, ID> implements Repository<T, ID>
         loadFromFile();
     }
 
-    private void loadFromFile() {
+    public void loadFromFile() {
         File file = new File(filename);
         if (file.exists()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {

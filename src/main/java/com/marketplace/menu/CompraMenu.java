@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 import com.marketplace.facade.MarketplaceFacade;
 import com.marketplace.model.Comprador;
+import com.marketplace.model.Historico;
 import com.marketplace.model.Loja;
 import com.marketplace.model.Produto;
 
@@ -182,6 +183,14 @@ public class CompraMenu extends Menu{
                 int gastoPara1Ponto = 50; // 1 ponto a cada 50 reais em compras
                 int bonus_pontuacao = (int) ((total - total % gastoPara1Ponto) / gastoPara1Ponto);
                 comprador.setPontuacao(pontuacao + bonus_pontuacao);
+
+                if(facade.findHistorico(comprador.getCpf()) != null){
+                    facade.atualizarHistorico(facade.findHistorico(comprador.getCpf()), carrinho);
+                }else{
+                    Historico historico = facade.cadastrarHistorico(comprador.getCpf());
+                    facade.atualizarHistorico(historico, carrinho);
+                }
+
                 System.out.println("Compra Realizada com Sucesso! " + bonus_pontuacao + " pontos adicionados à sua pontuação");
 
                 carrinho.clear();

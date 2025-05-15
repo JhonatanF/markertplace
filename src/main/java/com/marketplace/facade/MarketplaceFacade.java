@@ -2,10 +2,12 @@ package com.marketplace.facade;
 
 import com.marketplace.model.Admin;
 import com.marketplace.model.Comprador;
+import com.marketplace.model.Historico;
 import com.marketplace.model.Loja;
 import com.marketplace.model.Produto;
 import com.marketplace.service.AdminService;
 import com.marketplace.service.CompradorService;
+import com.marketplace.service.HistoricoService;
 import com.marketplace.service.LojaService;
 import com.marketplace.service.ProdutoService;
 
@@ -17,12 +19,14 @@ public class MarketplaceFacade {
     private final CompradorService compradorService;
     private final ProdutoService produtoService;
     private final AdminService adminService;
+    private final HistoricoService historicoService;
 
-    public MarketplaceFacade(LojaService lojaService, CompradorService compradorService, ProdutoService produtoService, AdminService adminService) {
+    public MarketplaceFacade(LojaService lojaService, CompradorService compradorService, ProdutoService produtoService, AdminService adminService, HistoricoService historicoService) {
         this.lojaService = lojaService;
         this.compradorService = compradorService;
         this.produtoService = produtoService;
         this.adminService = adminService;
+        this.historicoService = historicoService;
     }
 
     // Operações de Loja
@@ -139,6 +143,23 @@ public class MarketplaceFacade {
 
     public void removerAdmin(String id) {
         adminService.remover(id);
+    }
+
+    public Historico cadastrarHistorico(String cpf){
+        Historico historico = new Historico(cpf);
+        return historicoService.cadastrar(historico);
+    }
+
+    public Historico findHistorico(String cpf){
+        if(historicoService.exists(cpf))
+            return historicoService.buscarPorId(cpf);
+        else
+            return null;
+    }
+
+    public Historico atualizarHistorico(Historico historico, List<Produto> carrinho) {
+        historico.addProdutos(carrinho);;
+        return historicoService.atualizar(historico);
     }
 
     // Operações de remoção geral

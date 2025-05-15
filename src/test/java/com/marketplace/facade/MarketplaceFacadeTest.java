@@ -2,14 +2,17 @@ package com.marketplace.facade;
 
 import com.marketplace.model.Admin;
 import com.marketplace.model.Comprador;
+import com.marketplace.model.Historico;
 import com.marketplace.model.Loja;
 import com.marketplace.model.Produto;
 import com.marketplace.repository.AdminRepository;
 import com.marketplace.repository.CompradorRepository;
+import com.marketplace.repository.HistoricoRepository;
 import com.marketplace.repository.LojaRepository;
 import com.marketplace.repository.ProdutoRepository;
 import com.marketplace.service.AdminService;
 import com.marketplace.service.CompradorService;
+import com.marketplace.service.HistoricoService;
 import com.marketplace.service.LojaService;
 import com.marketplace.service.ProdutoService;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,13 +41,15 @@ class MarketplaceFacadeTest{
         CompradorRepository compradorRepo = new CompradorRepository();
         ProdutoRepository produtoRepo = new ProdutoRepository();
         AdminRepository adminRepo = new AdminRepository();
+        HistoricoRepository historicoRepo = new HistoricoRepository(Historico.class);
 
         LojaService lojaService = new LojaService(lojaRepo);
         CompradorService compradorService = new CompradorService(compradorRepo);
         ProdutoService produtoService = new ProdutoService(produtoRepo, lojaRepo);
         AdminService adminService = new AdminService(adminRepo);
+        HistoricoService historicoService = new HistoricoService(historicoRepo);
 
-        facade = new MarketplaceFacade(lojaService, compradorService, produtoService, adminService);
+        facade = new MarketplaceFacade(lojaService, compradorService, produtoService, adminService, historicoService);
 
         // Criar dados de teste
         admin = new Admin("Admin Teste", "admin@teste.com", "senha123", "12345678901", "Rua Admin, 123");
