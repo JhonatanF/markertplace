@@ -54,6 +54,27 @@
 ### Burndown Chart
 ![img.png](burndown-sp2.png)
 
+## Sprint 3 (2 semanas)
+
+### Backlog
+
+1. Carrinho de compras
+   - CRUD do carrinho de compras
+   - Possibilidade de aplicar cupons
+   - Desenvolver testes unitários
+2. Refatoração
+   - Correção do fluxo de compras
+   - Testes unitários
+
+### Organização da Equipe
+- PO: Matheus Victor
+- QA: Jhonatan Feitosa
+- DEV: Vinícius Araújo
+- DEV: Vitor Emanuel
+
+### Burndown Chart
+![img.png](burndown-sp3.png)
+
 ## Sprint 4 (4 semanas)
 
 ### Backlog
