@@ -2,6 +2,9 @@ package com.marketplace.menu;
 
 import com.marketplace.facade.MarketplaceFacade;
 import com.marketplace.model.Comprador;
+import com.marketplace.model.Historico;
+
+import java.util.Optional;
 import java.util.Scanner;
 
 public class CompradorLoginMenu extends Menu{
@@ -24,6 +27,11 @@ public class CompradorLoginMenu extends Menu{
         addOption(2, new MenuOption() {
             public String getDescription() { return "Atualizar Dados"; }
             public void execute() { atualizarComprador(); }
+        });
+
+        addOption(3, new MenuOption() {
+            public String getDescription() { return "Visualizar Historico"; }
+            public void execute() { visualizarHistorico(); }
         });
 
         addOption(0, new MenuOption() {
@@ -74,5 +82,11 @@ public class CompradorLoginMenu extends Menu{
             this.comprador = facade.atualizarComprador(nome, email, senha, cpf, endereco);
             System.out.println("Comprador atualizado com sucesso: " + comprador.getNome());
         }
+    }
+
+    private void visualizarHistorico(){
+        Historico historico = facade.findHistorico(comprador.getCpf());
+        
+        historico.printHistorico();
     }
 }
