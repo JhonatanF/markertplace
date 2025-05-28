@@ -5,11 +5,13 @@ import com.marketplace.model.Comprador;
 import com.marketplace.model.Historico;
 import com.marketplace.model.Loja;
 import com.marketplace.model.Produto;
+import com.marketplace.model.Avaliacao; // Importação da Avaliacao
 import com.marketplace.service.AdminService;
 import com.marketplace.service.CompradorService;
 import com.marketplace.service.HistoricoService;
 import com.marketplace.service.LojaService;
 import com.marketplace.service.ProdutoService;
+import com.marketplace.service.AvaliacaoService; // Importação do serviço de Avaliação
 
 import java.util.List;
 import java.util.Optional;
@@ -20,13 +22,16 @@ public class MarketplaceFacade {
     private final ProdutoService produtoService;
     private final AdminService adminService;
     private final HistoricoService historicoService;
+    private final AvaliacaoService avaliacaoService; // Novo serviço
 
-    public MarketplaceFacade(LojaService lojaService, CompradorService compradorService, ProdutoService produtoService, AdminService adminService, HistoricoService historicoService) {
+    public MarketplaceFacade(LojaService lojaService, CompradorService compradorService, ProdutoService produtoService,
+            AdminService adminService, HistoricoService historicoService, AvaliacaoService avaliacaoService) {
         this.lojaService = lojaService;
         this.compradorService = compradorService;
         this.produtoService = produtoService;
         this.adminService = adminService;
         this.historicoService = historicoService;
+        this.avaliacaoService = avaliacaoService; // Inicialização do novo serviço
     }
 
     // Operações de Loja
@@ -76,8 +81,8 @@ public class MarketplaceFacade {
     }
 
     // Operações de Produto
-    public Produto cadastrarProduto(String nome, double valor, String tipo, int quantidade, 
-                                  String marca, String descricao, String lojaCpfCnpj) {
+    public Produto cadastrarProduto(String nome, double valor, String tipo, int quantidade,
+            String marca, String descricao, String lojaCpfCnpj) {
         Produto produto = new Produto(nome, valor, tipo, quantidade, marca, descricao, lojaCpfCnpj);
         return produtoService.cadastrar(produto);
     }
@@ -106,15 +111,16 @@ public class MarketplaceFacade {
 
         System.out.println("\nPRODUTOS DA LOJA: " + loja.getNome());
         for (Produto produto : produtosDaLoja) {
-            System.out.println(produto.getNome() + " | valor:" + produto.getValor() + " | estoque:" + produto.getQuantidade() + " | id:" + produto.getId());
+            System.out.println(produto.getNome() + " | valor:" + produto.getValor() + " | estoque:"
+                    + produto.getQuantidade() + " | id:" + produto.getId());
         }
         System.out.println();
         return produtosDaLoja;
     }
 
-    public Produto atualizarProduto(String id, String nome, double valor, String tipo, 
-                                   int quantidade, String marca, String descricao, String lojaCpfCnpj) {
-        Produto produto = new Produto(id,nome, valor, tipo, quantidade, marca, descricao, lojaCpfCnpj);
+    public Produto atualizarProduto(String id, String nome, double valor, String tipo,
+            int quantidade, String marca, String descricao, String lojaCpfCnpj) {
+        Produto produto = new Produto(id, nome, valor, tipo, quantidade, marca, descricao, lojaCpfCnpj);
         return produtoService.atualizar(produto);
     }
 
@@ -145,40 +151,46 @@ public class MarketplaceFacade {
         adminService.remover(id);
     }
 
-    public Historico cadastrarHistorico(String cpf){
+    public Historico cadastrarHistorico(String cpf) {
         Historico historico = new Historico(cpf);
         return historicoService.cadastrar(historico);
     }
 
-    public Historico findHistorico(String cpf){
-        if(historicoService.exists(cpf))
+    public Historico findHistorico(String cpf) {
+        if (historicoService.exists(cpf))
             return historicoService.buscarPorId(cpf);
         else
             return null;
     }
 
     public Historico atualizarHistorico(Historico historico, List<Produto> carrinho) {
-        historico.addProdutos(carrinho);;
+        historico.addProdutos(carrinho);
         return historicoService.atualizar(historico);
     }
 
     // Operações de remoção geral
-
     protected void removerAdmins() {
         adminService.removerAdmins();
     }
 
-    protected void removerCompradores () {
+    protected void removerCompradores() {
         compradorService.removerCompradores();
     }
 
-    protected void removerProdutos () {
+    protected void removerProdutos() {
         produtoService.removerProdutos();
     }
 
-    protected void removerLojas () {
+    protected void removerLojas() {
         lojaService.removerLojas();
     }
 
+    public Avaliacao cadastrarAvaliacao(String compradorCpf, String historicoId, int nota, String comentario) {
+        Avaliacao avaliacao = new Avaliacao(compradorCpf, historicoId, nota, comentario);
+        return avaliacaoService.cadastrar(avaliacao);
+    }
 
+    public List<Avaliacao> listarAvaliacoesPorCompra(String historicoId) {
+        return avaliacaoService.listarPorCompra(historicoId);
+    }
 }

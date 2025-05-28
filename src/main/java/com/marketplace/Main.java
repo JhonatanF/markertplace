@@ -4,11 +4,13 @@ import com.marketplace.facade.MarketplaceFacade;
 import com.marketplace.menu.MainMenu;
 import com.marketplace.model.Historico;
 import com.marketplace.repository.AdminRepository;
+import com.marketplace.repository.AvaliacaoRepository;
 import com.marketplace.repository.CompradorRepository;
 import com.marketplace.repository.LojaRepository;
 import com.marketplace.repository.ProdutoRepository;
 import com.marketplace.repository.HistoricoRepository;
 import com.marketplace.service.AdminService;
+import com.marketplace.service.AvaliacaoService;
 import com.marketplace.service.CompradorService;
 import com.marketplace.service.LojaService;
 import com.marketplace.service.ProdutoService;
@@ -32,12 +34,19 @@ public class Main {
         AdminRepository adminRepo = new AdminRepository();
         HistoricoRepository historicoRepo = new HistoricoRepository(Historico.class);
 
+        // Adicione aqui AvaliacaoRepository e AvaliacaoService
+        AvaliacaoRepository avaliacaoRepo = new AvaliacaoRepository();
+        AvaliacaoService avaliacaoService = new AvaliacaoService(avaliacaoRepo);
+
         LojaService lojaService = new LojaService(lojaRepo);
         CompradorService compradorService = new CompradorService(compradorRepo);
         ProdutoService produtoService = new ProdutoService(produtoRepo, lojaRepo);
         AdminService adminService = new AdminService(adminRepo);
         HistoricoService historicoService = new HistoricoService(historicoRepo);
 
-        return new MarketplaceFacade(lojaService, compradorService, produtoService, adminService, historicoService);
+        // Agora, passe o avaliacaoService para a fachada (MarketplaceFacade)
+        return new MarketplaceFacade(lojaService, compradorService, produtoService, adminService, historicoService,
+                avaliacaoService);
     }
+
 }

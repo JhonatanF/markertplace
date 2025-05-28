@@ -11,11 +11,10 @@ import com.marketplace.model.Historico;
 import com.marketplace.model.Loja;
 import com.marketplace.model.Produto;
 
-public class CompraMenu extends Menu{
+public class CompraMenu extends Menu {
     private final MarketplaceFacade facade;
     private Comprador comprador;
     private List<Produto> carrinho;
-
 
     protected CompraMenu(Scanner scanner, MarketplaceFacade facade, Comprador comprador, List<Produto> carrinho) {
         super(scanner, "MENU DE COMPRA");
@@ -27,32 +26,56 @@ public class CompraMenu extends Menu{
     @Override
     protected void initializeOptions() {
         addOption(1, new MenuOption() {
-            public String getDescription() { return "Listar lojas"; }
-            public void execute() { listarLojas(); }
+            public String getDescription() {
+                return "Listar lojas";
+            }
+
+            public void execute() {
+                listarLojas();
+            }
         });
 
         addOption(2, new MenuOption() {
-            public String getDescription() { return "Visualizar Produtos da Loja"; }
-            public void execute() { visualizarProdutos(); }
+            public String getDescription() {
+                return "Visualizar Produtos da Loja";
+            }
+
+            public void execute() {
+                visualizarProdutos();
+            }
         });
 
         addOption(3, new MenuOption() {
-            public String getDescription() { return "Gerenciar Carrinho"; }
-            public void execute() { new CarrinhoMenu(scanner, facade, comprador, carrinho).show(); }
+            public String getDescription() {
+                return "Gerenciar Carrinho";
+            }
+
+            public void execute() {
+                new CarrinhoMenu(scanner, facade, comprador, carrinho).show();
+            }
         });
 
         addOption(4, new MenuOption() {
-            public String getDescription() { return "Finalizar Compra"; }
-            public void execute() { finalizarCompra(); }
+            public String getDescription() {
+                return "Finalizar Compra";
+            }
+
+            public void execute() {
+                finalizarCompra();
+            }
         });
-        
+
         addOption(0, new MenuOption() {
-            public String getDescription() { return "Sair"; }
-            public void execute() { }
+            public String getDescription() {
+                return "Sair";
+            }
+
+            public void execute() {
+            }
         });
     }
 
-    public void listarLojas(){
+    public void listarLojas() {
         var lojas = facade.listarLojas();
         if (lojas.isEmpty()) {
             System.out.println("Nenhuma loja cadastrada");
@@ -64,13 +87,13 @@ public class CompraMenu extends Menu{
         }
     }
 
-    public void visualizarProdutos(){
+    public void visualizarProdutos() {
         int option = 2;
         String cpfCnpj = "";
         List<Produto> produtos = null;
-        
-        do{
-            if(option == 2){
+
+        do {
+            if (option == 2) {
                 System.out.print("Digite o CPF/CNPJ da loja:");
                 cpfCnpj = scanner.nextLine();
 
@@ -79,18 +102,18 @@ public class CompraMenu extends Menu{
                 if (produtos.isEmpty()) {
                     System.out.println("Nenhum produto encontrado para esta loja");
                     return;
-                }else{
+                } else {
                     System.out.println("OPÇÕES");
                     System.out.println("1. Comprar Produto");
                     System.out.println("0. Voltar");
                     System.out.print("Escolha uma opção: ");
-    
+
                     option = scanner.nextInt();
                     scanner.nextLine();
                 }
             }
 
-            if(option == 1){
+            if (option == 1) {
                 System.out.print("Digite o Nome do produto: ");
                 String nomeProduto = scanner.nextLine();
 
@@ -104,16 +127,16 @@ public class CompraMenu extends Menu{
                     Produto prod = produto.get();
 
                     // atualizando quantidade do produto
-                    prod = facade.atualizarProduto(prod.getId(),prod.getNome(),prod.getValor(),prod.getTipo(),
-                            (prod.getQuantidade()-qtdProduto),prod.getMarca(),prod.getDescricao(),cpfCnpj);
+                    prod = facade.atualizarProduto(prod.getId(), prod.getNome(), prod.getValor(), prod.getTipo(),
+                            (prod.getQuantidade() - qtdProduto), prod.getMarca(), prod.getDescricao(), cpfCnpj);
 
                     Produto produtoComprado = (Produto) prod.clone();
                     produtoComprado.setQuantidade(qtdProduto);
 
-                    if(carrinho == null){
+                    if (carrinho == null) {
                         carrinho = new ArrayList<>();
                         carrinho.add(produtoComprado);
-                    }else{
+                    } else {
                         carrinho.add(produtoComprado);
                     }
                     System.out.println("Produto adicionado ao carrinho!\n");
@@ -127,19 +150,21 @@ public class CompraMenu extends Menu{
                     option = scanner.nextInt();
                     scanner.nextLine();
 
-                    if (option == 1){exibirProdutos(produtos);}
+                    if (option == 1) {
+                        exibirProdutos(produtos);
+                    }
 
-                }else{
+                } else {
                     System.out.println("Produto não existe");
                 }
             }
-            if(option == 3){
-                new CarrinhoMenu(scanner,facade,comprador,carrinho).show();
+            if (option == 3) {
+                new CarrinhoMenu(scanner, facade, comprador, carrinho).show();
             }
-        }while (option > 0 && option < 3);
+        } while (option > 0 && option < 3);
     }
 
-    private void exibirProdutos(List<Produto> produtos){
+    private void exibirProdutos(List<Produto> produtos) {
 
         System.out.println("Produtos da Loja:");
         for (Produto produto : produtos) {
@@ -156,7 +181,8 @@ public class CompraMenu extends Menu{
             int pontuacao = comprador.getPontuacao();
             for (Produto produto : carrinho) {
                 total += produto.getValor() * produto.getQuantidade();
-                System.out.println(produto.getNome() + " | valor:" + produto.getValor() + " | quantidade:" + produto.getQuantidade());
+                System.out.println(produto.getNome() + " | valor:" + produto.getValor() + " | quantidade:"
+                        + produto.getQuantidade());
             }
             System.out.println("Total: " + total);
 
@@ -164,7 +190,7 @@ public class CompraMenu extends Menu{
                 System.out.println("\nVocê tem " + pontuacao + " pontos de fidelidade.");
                 System.out.println("Deseja Aplicar agora? (S/N)");
                 String respostaDesconto = scanner.nextLine();
-                if (respostaDesconto.equals("S")) {
+                if (respostaDesconto.equalsIgnoreCase("S")) {
                     int descontoPorPonto = 2;
                     System.out.println("Desconto pela pontuação fidelidade: $" + pontuacao * descontoPorPonto);
                     total -= pontuacao * descontoPorPonto;
@@ -180,23 +206,34 @@ public class CompraMenu extends Menu{
             scanner.nextLine();
 
             if (option == 1) {
-                int gastoPara1Ponto = 50; // 1 ponto a cada 50 reais em compras
+                int gastoPara1Ponto = 50;
                 int bonus_pontuacao = (int) ((total - total % gastoPara1Ponto) / gastoPara1Ponto);
                 comprador.setPontuacao(pontuacao + bonus_pontuacao);
 
-                if(facade.findHistorico(comprador.getCpf()) != null){
-                    facade.atualizarHistorico(facade.findHistorico(comprador.getCpf()), carrinho);
-                }else{
-                    Historico historico = facade.cadastrarHistorico(comprador.getCpf());
-                    facade.atualizarHistorico(historico, carrinho);
-                }
+                // Criar um novo histórico para cada compra
+                Historico historico = facade.cadastrarHistorico(comprador.getCpf());
+                historico = facade.atualizarHistorico(historico, carrinho);
 
-                System.out.println("Compra Realizada com Sucesso! " + bonus_pontuacao + " pontos adicionados à sua pontuação");
-
+                System.out.println(
+                        "Compra Realizada com Sucesso! " + bonus_pontuacao + " pontos adicionados à sua pontuação");
                 carrinho.clear();
+
+                // Avaliação da compra
+                System.out.println("\nDeseja avaliar esta compra? (S/N)");
+                String respostaAvaliacao = scanner.nextLine();
+                if (respostaAvaliacao.equalsIgnoreCase("S")) {
+                    System.out.print("Dê uma nota de 1 a 5 para esta compra: ");
+                    int nota = scanner.nextInt();
+                    scanner.nextLine(); // limpar buffer
+
+                    System.out.print("Digite um comentário (opcional): ");
+                    String comentario = scanner.nextLine();
+
+                    facade.cadastrarAvaliacao(comprador.getCpf(), historico.getId(), nota, comentario);
+                    System.out.println("Avaliação registrada com sucesso!");
+                }
             }
-        }
-        else {
+        } else {
             System.out.println("\nO carrinho está vazio!");
         }
     }

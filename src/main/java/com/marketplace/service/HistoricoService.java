@@ -16,7 +16,7 @@ public class HistoricoService {
 
         Object[] data = repository.parseData();
 
-        for(int i = 0; i < data.length; i++){
+        for (int i = 0; i < data.length; i++) {
             this.historicos.add((Historico) data[i]);
         }
     }
@@ -30,12 +30,21 @@ public class HistoricoService {
         return historico;
     }
 
-    public Historico buscarPorId(String cpf) {
-        for(Historico hist : historicos){
-            if(cpf.equals(hist.getCpf()))
+    public Historico buscarPorId(String id) {
+        for (Historico hist : historicos) {
+            if (id.equals(hist.getId()))
                 return hist;
         }
         return null;
+    }
+
+    public List<Historico> buscarPorCpf(String cpf) {
+        List<Historico> result = new ArrayList<>();
+        for (Historico hist : historicos) {
+            if (cpf.equals(hist.getCpf()))
+                result.add(hist);
+        }
+        return result;
     }
 
     public List<Historico> listarTodos() {
@@ -46,8 +55,8 @@ public class HistoricoService {
         if (!exists(historico.getCpf())) {
             throw new IllegalArgumentException("Historico não encontrado");
         }
-        for(Historico hist : historicos){
-            if(historico.getCpf().equals(hist.getCpf()))
+        for (Historico hist : historicos) {
+            if (historico.getCpf().equals(hist.getCpf()))
                 hist = historico;
         }
 
@@ -56,9 +65,9 @@ public class HistoricoService {
         return historico;
     }
 
-    public boolean exists(String cpf){
-        for(Historico hist : historicos){
-            if(cpf.equals(hist.getCpf()))
+    public boolean exists(String cpf) {
+        for (Historico hist : historicos) {
+            if (cpf.equals(hist.getCpf()))
                 return true;
         }
         return false;
