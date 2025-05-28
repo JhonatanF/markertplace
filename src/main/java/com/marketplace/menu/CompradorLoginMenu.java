@@ -61,15 +61,19 @@ public class CompradorLoginMenu extends Menu {
 
     private void atualizarComprador() {
         String cpf = comprador.getCpf();
-        if (facade.buscarComprador(cpf).isEmpty()) {
+
+        Optional<Comprador> compradorOptional = facade.buscarComprador(cpf);
+        if (compradorOptional.isEmpty()) {
             System.out.println("Comprador não encontrado");
             return;
         }
 
-        String nome = comprador.getNome();
-        String email = comprador.getEmail();
-        String senha = comprador.getSenha();
-        String endereco = comprador.getEndereco();
+        Comprador compradorAtual = compradorOptional.get();
+
+        String nome = compradorAtual.getNome();
+        String email = compradorAtual.getEmail();
+        String senha = compradorAtual.getSenha();
+        String endereco = compradorAtual.getEndereco();
 
         int option;
 
@@ -81,25 +85,36 @@ public class CompradorLoginMenu extends Menu {
             System.out.println("4. Endereco: " + endereco);
             System.out.println("0. Cancelar");
 
-            option = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-        } while (option < 1 || option > 4);
+            try {
+                option = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                option = -1;
+            }
+        } while (option < 0 || option > 4);
+
+        if (option == 0) {
+            return;
+        }
 
         System.out.println("Novo dado:");
         String novoDado = scanner.nextLine();
 
-        if (option > 0) {
-            if (option == 1) {
-                nome = novoDado;
-            } else if (option == 2) {
-                email = novoDado;
-            } else if (option == 3) {
-                senha = novoDado;
-            } else if (option == 4) {
-                endereco = novoDado;
-            }
-            this.comprador = facade.atualizarComprador(nome, email, senha, cpf, endereco);
+        if (option == 1) {
+            compradorAtual.setNome(novoDado);
+        } else if (option == 2) {
+            compradorAtual.setEmail(novoDado);
+        } else if (option == 3) {
+            compradorAtual.setSenha(novoDado);
+        } else if (option == 4) {
+            compradorAtual.setEndereco(novoDado);
+        }
+
+        try {
+            facade.atualizarComprador(compradorAtual);
+            this.comprador = compradorAtual; // Atualiza o campo local, se necessário
             System.out.println("Comprador atualizado com sucesso: " + comprador.getNome());
+        } catch (Exception e) {
+            System.out.println("Erro ao atualizar comprador: " + e.getMessage());
         }
     }
 

@@ -83,7 +83,8 @@ public class CompraMenu extends Menu {
         }
         System.out.println("\nLOJAS CADASTRADAS:");
         for (Loja loja : lojas) {
-            System.out.println(loja.getNome() + " | CNPJ:" + loja.getCpfCnpj() + " | Contato:" + loja.getEmail());
+            System.out.println(loja.getNome() + " | CNPJ:" + loja.getCpfCnpj() + " | Contato:" + loja.getEmail()
+                    + " | Conteito: " + facade.calcularConceitoLoja(loja.getCpfCnpj()) + " |");
         }
     }
 
@@ -178,6 +179,7 @@ public class CompraMenu extends Menu {
             System.out.println("\n== FINALIZANDO COMPRA ==");
             System.out.println("Produtos:");
             double total = 0;
+
             int pontuacao = comprador.getPontuacao();
             for (Produto produto : carrinho) {
                 total += produto.getValor() * produto.getQuantidade();
@@ -186,16 +188,20 @@ public class CompraMenu extends Menu {
             }
             System.out.println("Total: " + total);
 
-            if (pontuacao > 0) {
-                System.out.println("\nVocê tem " + pontuacao + " pontos de fidelidade.");
-                System.out.println("Deseja Aplicar agora? (S/N)");
-                String respostaDesconto = scanner.nextLine();
-                if (respostaDesconto.equalsIgnoreCase("S")) {
-                    int descontoPorPonto = 2;
-                    System.out.println("Desconto pela pontuação fidelidade: $" + pontuacao * descontoPorPonto);
-                    total -= pontuacao * descontoPorPonto;
-                    System.out.println("Total: " + total);
+            // Novo desconto de 10% com 5 pontos
+            if (pontuacao >= 12) {
+                System.out.println("\nDeseja usar 12 pontos para garantir 10% de desconto? (S/N)");
+                String respostaDescontoExtra = scanner.nextLine().trim();
+                if (respostaDescontoExtra.equalsIgnoreCase("S")) {
+                    double desconto10 = total * 0.10;
+                    total -= desconto10;
+
+                    System.out.println("12 Pontos utilizados. Desconto de 10% aplicado: R$" + desconto10);
+                    System.out.println("Total com desconto: R$" + total);
                 }
+            } else {
+                System.out.println(
+                        "\nVocê não tem pontos suficientes para o desconto de 10%. \nProsseguindo com a compra...\n\n");
             }
 
             System.out.println("\nOPÇÕES");
@@ -206,10 +212,12 @@ public class CompraMenu extends Menu {
             scanner.nextLine();
 
             if (option == 1) {
+                if (pontuacao >= 12) {
+                    facade.decrementarPontuacao(comprador.getCpf());
+                }
                 int gastoPara1Ponto = 50;
                 int bonus_pontuacao = (int) ((total - total % gastoPara1Ponto) / gastoPara1Ponto);
-                comprador.setPontuacao(pontuacao + bonus_pontuacao);
-
+                facade.adicionarPontuacao(bonus_pontuacao, comprador.getCpf());
                 // Registrar a compra no histórico
                 String compraId = facade.registrarCompra(comprador.getCpf(), carrinho, total);
 
@@ -221,9 +229,16 @@ public class CompraMenu extends Menu {
                 if (respostaAvaliacao.equalsIgnoreCase("S")) {
                     for (Produto produto : carrinho) {
                         System.out.println("\nProduto: " + produto.getNome());
-                        System.out.print("Dê uma nota de 1 a 5 para este produto: ");
-                        int nota = scanner.nextInt();
-                        scanner.nextLine(); // limpar buffer
+
+                        int nota;
+                        do {
+                            System.out.print("Dê uma nota de 1 a 5 para este produto: ");
+                            nota = scanner.nextInt();
+                            scanner.nextLine(); // limpar buffer
+                            if (nota < 1 || nota > 5) {
+                                System.out.println("Nota inválida. Digite um valor entre 1 e 5.");
+                            }
+                        } while (nota < 1 || nota > 5);
 
                         System.out.print("Digite um comentário (opcional): ");
                         String comentario = scanner.nextLine();

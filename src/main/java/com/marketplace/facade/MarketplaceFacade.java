@@ -5,6 +5,7 @@ import com.marketplace.model.Comprador;
 import com.marketplace.model.Historico;
 import com.marketplace.model.Loja;
 import com.marketplace.model.Produto;
+import com.marketplace.repository.CompradorRepository;
 import com.marketplace.model.Avaliacao; // Importação da Avaliacao
 import com.marketplace.service.AdminService;
 import com.marketplace.service.CompradorService;
@@ -72,8 +73,27 @@ public class MarketplaceFacade {
         return compradorService.listarTodos();
     }
 
-    public Comprador atualizarComprador(String nome, String email, String senha, String cpf, String endereco) {
-        Comprador comprador = new Comprador(nome, email, senha, cpf, endereco);
+    public void adicionarPontuacao(int pontuacao, String cpf) {
+        Optional<Comprador> compradorOptional = compradorService.buscarPorId(cpf);
+        Comprador compradorAtualizado = compradorOptional.get();
+        compradorAtualizado.setPontuacao(compradorAtualizado.getPontuacao() + pontuacao);
+        compradorService.atualizar(compradorAtualizado);
+    }
+
+    public void decrementarPontuacao(String cpf) {
+        Optional<Comprador> compradorOptional = compradorService.buscarPorId(cpf);
+        Comprador compradorAtualizado = compradorOptional.get();
+        compradorAtualizado.setPontuacao(compradorAtualizado.getPontuacao() - 12);
+        compradorService.atualizar(compradorAtualizado);
+    }
+
+    public Comprador atualizarComprador(Comprador comprador) {
+        // Valida se o comprador existe
+        if (!compradorService.buscarPorId(comprador.getCpf()).isPresent()) {
+            throw new IllegalArgumentException("Comprador não encontrado");
+        }
+
+        // Atualiza o comprador diretamente
         return compradorService.atualizar(comprador);
     }
 
@@ -190,5 +210,9 @@ public class MarketplaceFacade {
 
     public List<Avaliacao> listarAvaliacoesPorCompra(String historicoId) {
         return avaliacaoService.listarPorCompra(historicoId);
+    }
+
+    public String calcularConceitoLoja(String idLoja) {
+        return avaliacaoService.calcularMediaAvaliacoesLoja(idLoja);
     }
 }

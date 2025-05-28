@@ -2,6 +2,8 @@ package com.marketplace.menu;
 
 import com.marketplace.facade.MarketplaceFacade;
 import com.marketplace.model.Comprador;
+
+import java.util.Optional;
 import java.util.Scanner;
 
 public class CompradorMenu extends Menu {
@@ -15,33 +17,62 @@ public class CompradorMenu extends Menu {
     @Override
     protected void initializeOptions() {
         addOption(1, new MenuOption() {
-            public String getDescription() { return "Cadastrar Comprador"; }
-            public void execute() { cadastrarComprador(); }
+            public String getDescription() {
+                return "Cadastrar Comprador";
+            }
+
+            public void execute() {
+                cadastrarComprador();
+            }
         });
 
         addOption(2, new MenuOption() {
-            public String getDescription() { return "Buscar Comprador"; }
-            public void execute() { buscarComprador(); }
+            public String getDescription() {
+                return "Buscar Comprador";
+            }
+
+            public void execute() {
+                buscarComprador();
+            }
         });
 
         addOption(3, new MenuOption() {
-            public String getDescription() { return "Listar Compradores"; }
-            public void execute() { listarCompradores(); }
+            public String getDescription() {
+                return "Listar Compradores";
+            }
+
+            public void execute() {
+                listarCompradores();
+            }
         });
 
         addOption(4, new MenuOption() {
-            public String getDescription() { return "Atualizar Comprador"; }
-            public void execute() { atualizarComprador(); }
+            public String getDescription() {
+                return "Atualizar Comprador";
+            }
+
+            public void execute() {
+                atualizarComprador();
+            }
         });
 
         addOption(5, new MenuOption() {
-            public String getDescription() { return "Remover Comprador"; }
-            public void execute() { removerComprador(); }
+            public String getDescription() {
+                return "Remover Comprador";
+            }
+
+            public void execute() {
+                removerComprador();
+            }
         });
 
         addOption(0, new MenuOption() {
-            public String getDescription() { return "Voltar"; }
-            public void execute() { }
+            public String getDescription() {
+                return "Voltar";
+            }
+
+            public void execute() {
+            }
         });
     }
 
@@ -66,9 +97,8 @@ public class CompradorMenu extends Menu {
         System.out.print("Digite o CPF do comprador: ");
         String cpf = scanner.nextLine();
         facade.buscarComprador(cpf).ifPresentOrElse(
-            comprador -> System.out.println(comprador),
-            () -> System.out.println("Comprador não encontrado")
-        );
+                comprador -> System.out.println(comprador),
+                () -> System.out.println("Comprador não encontrado"));
     }
 
     private void listarCompradores() {
@@ -83,11 +113,15 @@ public class CompradorMenu extends Menu {
     private void atualizarComprador() {
         System.out.print("Digite o CPF do comprador: ");
         String cpf = scanner.nextLine();
-        
-        if (facade.buscarComprador(cpf).isEmpty()) {
-            System.out.println("Comprador não encontrado");
+
+        Optional<Comprador> compradorOptional = facade.buscarComprador(cpf);
+
+        if (compradorOptional.isEmpty()) {
+            System.out.println("Comprador não encontrado.");
             return;
         }
+
+        Comprador comprador = compradorOptional.get();
 
         System.out.print("Novo nome: ");
         String nome = scanner.nextLine();
@@ -98,8 +132,18 @@ public class CompradorMenu extends Menu {
         System.out.print("Novo endereço: ");
         String endereco = scanner.nextLine();
 
-        Comprador comprador = facade.atualizarComprador(nome, email, senha, cpf, endereco);
-        System.out.println("Comprador atualizado com sucesso: " + comprador.getNome());
+        // Atualiza os dados do comprador
+        comprador.setNome(nome);
+        comprador.setEmail(email);
+        comprador.setSenha(senha);
+        comprador.setEndereco(endereco);
+
+        try {
+            facade.atualizarComprador(comprador);
+            System.out.println("Comprador atualizado com sucesso: " + comprador.getNome());
+        } catch (Exception e) {
+            System.out.println("Erro ao atualizar comprador: " + e.getMessage());
+        }
     }
 
     private void removerComprador() {
