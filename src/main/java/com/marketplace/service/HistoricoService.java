@@ -1,75 +1,43 @@
 package com.marketplace.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.marketplace.model.Historico;
 import com.marketplace.repository.HistoricoRepository;
 
+import java.util.List;
+import java.util.Optional;
+
 public class HistoricoService {
     private final HistoricoRepository repository;
-    private List<Historico> historicos;
 
     public HistoricoService(HistoricoRepository repository) {
         this.repository = repository;
-        this.historicos = new ArrayList<>();
-
-        Object[] data = repository.parseData();
-
-        for (int i = 0; i < data.length; i++) {
-            this.historicos.add((Historico) data[i]);
-        }
     }
 
-    public Historico cadastrar(Historico historico) {
-        if (exists(historico.getCpf())) {
-            throw new IllegalArgumentException("Historico Já cadastrado");
-        }
-        this.historicos.add(historico);
-        repository.writeData(historicos.toArray());
-        return historico;
+    public Historico cadastrarOuAtualizarHistorico(String compradorCpf, List<Historico.Compra> compras) {
+        // Busca o histórico existente ou cria um novo se não existir
+        Historico historico = buscarPorComprador(compradorCpf);
+
+        // Adiciona todas as novas compras ao histórico
+        historico.getCompras().addAll(compras);
+
+        // Salva e retorna o histórico atualizado
+        return repository.salvar(historico);
     }
 
-    public Historico buscarPorId(String id) {
-        for (Historico hist : historicos) {
-            if (id.equals(hist.getId()))
-                return hist;
-        }
-        return null;
-    }
+    public Historico buscarPorComprador(String compradorCpf) {
+        Optional<Historico> historicoOpt = repository.buscarPorComprador(compradorCpf);
 
-    public List<Historico> buscarPorCpf(String cpf) {
-        List<Historico> result = new ArrayList<>();
-        for (Historico hist : historicos) {
-            if (cpf.equals(hist.getCpf()))
-                result.add(hist);
+        if (historicoOpt.isPresent()) {
+            return historicoOpt.get(); // Retorna o histórico existente
+        } else {
+            // Cria um novo histórico se não existir
+            Historico novoHistorico = new Historico(compradorCpf);
+            return repository.salvar(novoHistorico);
         }
-        return result;
     }
 
     public List<Historico> listarTodos() {
-        return historicos;
+        return repository.listarTodos();
     }
 
-    public Historico atualizar(Historico historico) {
-        if (!exists(historico.getCpf())) {
-            throw new IllegalArgumentException("Historico não encontrado");
-        }
-        for (Historico hist : historicos) {
-            if (historico.getCpf().equals(hist.getCpf()))
-                hist = historico;
-        }
-
-        repository.writeData(historicos.toArray());
-
-        return historico;
-    }
-
-    public boolean exists(String cpf) {
-        for (Historico hist : historicos) {
-            if (cpf.equals(hist.getCpf()))
-                return true;
-        }
-        return false;
-    }
 }

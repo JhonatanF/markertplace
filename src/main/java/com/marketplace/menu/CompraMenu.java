@@ -210,28 +210,31 @@ public class CompraMenu extends Menu {
                 int bonus_pontuacao = (int) ((total - total % gastoPara1Ponto) / gastoPara1Ponto);
                 comprador.setPontuacao(pontuacao + bonus_pontuacao);
 
-                // Criar um novo histórico para cada compra
-                Historico historico = facade.cadastrarHistorico(comprador.getCpf());
-                historico = facade.atualizarHistorico(historico, carrinho);
+                // Registrar a compra no histórico
+                String compraId = facade.registrarCompra(comprador.getCpf(), carrinho, total);
 
                 System.out.println(
                         "Compra Realizada com Sucesso! " + bonus_pontuacao + " pontos adicionados à sua pontuação");
+
+                System.out.println("\nDeseja avaliar esta compra? (S/N)");
+                String respostaAvaliacao = scanner.nextLine().trim();
+                if (respostaAvaliacao.equalsIgnoreCase("S")) {
+                    for (Produto produto : carrinho) {
+                        System.out.println("\nProduto: " + produto.getNome());
+                        System.out.print("Dê uma nota de 1 a 5 para este produto: ");
+                        int nota = scanner.nextInt();
+                        scanner.nextLine(); // limpar buffer
+
+                        System.out.print("Digite um comentário (opcional): ");
+                        String comentario = scanner.nextLine();
+
+                        facade.cadastrarAvaliacao(comprador.getCpf(), compraId, nota, comentario,
+                                produto.getLojaCpfCnpj());
+                        System.out.println("Avaliação registrada com sucesso para o produto: " + produto.getNome());
+                    }
+                }
                 carrinho.clear();
 
-                // Avaliação da compra
-                System.out.println("\nDeseja avaliar esta compra? (S/N)");
-                String respostaAvaliacao = scanner.nextLine();
-                if (respostaAvaliacao.equalsIgnoreCase("S")) {
-                    System.out.print("Dê uma nota de 1 a 5 para esta compra: ");
-                    int nota = scanner.nextInt();
-                    scanner.nextLine(); // limpar buffer
-
-                    System.out.print("Digite um comentário (opcional): ");
-                    String comentario = scanner.nextLine();
-
-                    facade.cadastrarAvaliacao(comprador.getCpf(), historico.getId(), nota, comentario);
-                    System.out.println("Avaliação registrada com sucesso!");
-                }
             }
         } else {
             System.out.println("\nO carrinho está vazio!");

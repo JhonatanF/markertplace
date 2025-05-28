@@ -44,6 +44,14 @@ public class AvaliacaoRepository {
         }
     }
 
+    public double calcularMediaAvaliacoesPorLoja(String lojaId) {
+        return avaliacoes.stream()
+                .filter(a -> a.getLojaId() != null && a.getLojaId().equals(lojaId))
+                .mapToInt(Avaliacao::getNota)
+                .average()
+                .orElse(0.0);
+    }
+
     private void saveToFile() {
         JsonArray jsonArray = new JsonArray();
         for (Avaliacao a : avaliacoes) {

@@ -2,79 +2,81 @@ package com.marketplace.repository;
 
 import com.google.gson.*;
 import org.apache.commons.io.IOUtils;
+import com.marketplace.model.Historico;
+
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 public class HistoricoRepository {
+    private final String path = "historicos-v1.json";
     Class c;
-    Gson gson;
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Date.class,
+                    (JsonSerializer<Date>) (date, type, context) -> new JsonPrimitive(date.getTime()))
+            .registerTypeAdapter(Date.class,
+                    (JsonDeserializer<Date>) (json, type, context) -> new Date(json.getAsLong()))
+            .setPrettyPrinting()
+            .create();
 
     public HistoricoRepository(Class c) {
         // dataBase = nome do arquivo que guarda os dados | c = classe que representa os
         // objetos daquele arquivo (usar .class para o parametro)
         this.c = c;
-        gson = new Gson();
     }
 
-    public Object[] parseData() {
-        String content;
-        JsonArray jsonArray;
+    public Historico salvar(Historico historico) {
+        List<Historico> historicos = listarTodos();
 
-        String path = "historico-v1.json";
-        File file = new File(path);
-        // Se o arquivo não existe ou está vazio
-        if (!file.exists() || file.length() == 0) {
-            // Cria estrutura inicial se não existir
-            if (!file.exists()) {
-                try (Writer writer = new FileWriter(path)) {
-                    JsonObject initialStructure = new JsonObject();
-                    initialStructure.add("historico", new JsonArray());
-                    gson.toJson(initialStructure, writer);
-                } catch (IOException e) {
-                    throw new RuntimeException("Erro ao criar arquivo de histórico", e);
-                }
+        historicos.removeIf(h -> h.getCompradorCpf().equals(historico.getCompradorCpf()));
+        historicos.add(historico);
+
+        salvarTodos(historicos);
+        return historico;
+    }
+
+    public Optional<Historico> buscarPorComprador(String compradorCpf) {
+        return listarTodos().stream()
+                .filter(h -> h.getCompradorCpf().equals(compradorCpf))
+                .findFirst();
+    }
+
+    public List<Historico> listarTodos() {
+        try (FileReader reader = new FileReader(path)) {
+            String content = IOUtils.toString(reader);
+            if (content.isBlank())
+                return new ArrayList<>();
+
+            JsonObject jsonObject = gson.fromJson(content, JsonObject.class);
+            JsonArray jsonArray = jsonObject.getAsJsonArray("historicos");
+
+            List<Historico> result = new ArrayList<>();
+            for (JsonElement elem : jsonArray) {
+                result.add(gson.fromJson(elem, Historico.class));
             }
-            return new Object[0];
-        }
-        try (FileReader fileReader = new FileReader(path)) {
-            content = IOUtils.toString(fileReader);
-            if (content.isBlank()) {
-                return new Object[0];
-            }
+            return result;
         } catch (FileNotFoundException e) {
-            System.out.println("Arquivo não encontrado");
-            return new Object[0];
+            return new ArrayList<>();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao ler arquivo de históricos", e);
         }
-
-        JsonObject jsonObject = gson.fromJson(content, JsonObject.class);
-        jsonArray = jsonObject.getAsJsonArray("historico");
-
-        Object[] objects = new Object[jsonArray.size()];
-
-        for (int i = 0; i < jsonArray.size(); i++) {
-            objects[i] = gson.fromJson(jsonArray.get(i), c);
-        }
-
-        return objects;
     }
 
-    public void writeData(Object[] arr) {
+    private void salvarTodos(List<Historico> historicos) {
         JsonArray jsonArray = new JsonArray();
-        for (Object o : arr) {
-            jsonArray.add(gson.toJsonTree(o, c));
+        for (Historico h : historicos) {
+            jsonArray.add(gson.toJsonTree(h));
         }
 
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("historico", jsonArray);
-
-        String path = "historico-v1.json";
+        jsonObject.add("historicos", jsonArray);
 
         try (Writer writer = new FileWriter(path)) {
             gson.toJson(jsonObject, writer);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao salvar arquivo de históricos", e);
         }
     }
 }

@@ -13,6 +13,7 @@ import com.marketplace.service.LojaService;
 import com.marketplace.service.ProdutoService;
 import com.marketplace.service.AvaliacaoService; // Importação do serviço de Avaliação
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -151,21 +152,17 @@ public class MarketplaceFacade {
         adminService.remover(id);
     }
 
-    public Historico cadastrarHistorico(String cpf) {
-        Historico historico = new Historico(cpf);
-        return historicoService.cadastrar(historico);
+    public String registrarCompra(String compradorCpf, List<Produto> produtos, double total) {
+        Historico.Compra novaCompra = new Historico.Compra(produtos, total);
+        List<Historico.Compra> compras = new ArrayList<>();
+        compras.add(novaCompra);
+
+        historicoService.cadastrarOuAtualizarHistorico(compradorCpf, compras);
+        return novaCompra.getId(); // Retorna o ID da compra
     }
 
-    public Historico findHistorico(String cpf) {
-        if (historicoService.exists(cpf))
-            return historicoService.buscarPorId(cpf);
-        else
-            return null;
-    }
-
-    public Historico atualizarHistorico(Historico historico, List<Produto> carrinho) {
-        historico.addProdutos(carrinho);
-        return historicoService.atualizar(historico);
+    public Historico buscarHistoricoComprador(String compradorCpf) {
+        return historicoService.buscarPorComprador(compradorCpf);
     }
 
     // Operações de remoção geral
@@ -185,8 +182,9 @@ public class MarketplaceFacade {
         lojaService.removerLojas();
     }
 
-    public Avaliacao cadastrarAvaliacao(String compradorCpf, String historicoId, int nota, String comentario) {
-        Avaliacao avaliacao = new Avaliacao(compradorCpf, historicoId, nota, comentario);
+    public Avaliacao cadastrarAvaliacao(String compradorCpf, String historicoId, int nota, String comentario,
+            String idLoja) {
+        Avaliacao avaliacao = new Avaliacao(compradorCpf, historicoId, nota, comentario, idLoja);
         return avaliacaoService.cadastrar(avaliacao);
     }
 

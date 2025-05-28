@@ -6,15 +6,17 @@ public class Avaliacao {
     private String historicoId; // ID da compra no histórico
     private int nota; // Nota de 1 a 5
     private String comentario;
+    private String lojaId;
 
     public Avaliacao() {
     }
 
-    public Avaliacao(String compradorCpf, String historicoId, int nota, String comentario) {
+    public Avaliacao(String compradorCpf, String historicoId, int nota, String comentario, String lojaId) {
         this.compradorCpf = compradorCpf;
         this.historicoId = historicoId;
         this.nota = nota;
         this.comentario = comentario;
+        this.lojaId = lojaId;
     }
 
     // getters e setters
@@ -24,6 +26,14 @@ public class Avaliacao {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setLojaId(String lojaId) {
+        this.lojaId = lojaId;
+    }
+
+    public String getLojaId() {
+        return this.lojaId;
     }
 
     public String getCompradorCpf() {

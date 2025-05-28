@@ -7,7 +7,7 @@ import com.marketplace.model.Historico;
 import java.util.Optional;
 import java.util.Scanner;
 
-public class CompradorLoginMenu extends Menu{
+public class CompradorLoginMenu extends Menu {
     private final MarketplaceFacade facade;
     private Comprador comprador;
 
@@ -20,23 +20,42 @@ public class CompradorLoginMenu extends Menu{
     @Override
     protected void initializeOptions() {
         addOption(1, new MenuOption() {
-            public String getDescription() { return "Navegar Pelo Sistema"; }
-            public void execute() { new CompraMenu(scanner,facade,comprador,null).show(); }
+            public String getDescription() {
+                return "Navegar Pelo Sistema";
+            }
+
+            public void execute() {
+                new CompraMenu(scanner, facade, comprador, null).show();
+            }
         });
 
         addOption(2, new MenuOption() {
-            public String getDescription() { return "Atualizar Dados"; }
-            public void execute() { atualizarComprador(); }
+            public String getDescription() {
+                return "Atualizar Dados";
+            }
+
+            public void execute() {
+                atualizarComprador();
+            }
         });
 
         addOption(3, new MenuOption() {
-            public String getDescription() { return "Visualizar Historico"; }
-            public void execute() { visualizarHistorico(); }
+            public String getDescription() {
+                return "Visualizar Historico";
+            }
+
+            public void execute() {
+                visualizarHistorico();
+            }
         });
 
         addOption(0, new MenuOption() {
-            public String getDescription() { return "Sair"; }
-            public void execute() { }
+            public String getDescription() {
+                return "Sair";
+            }
+
+            public void execute() {
+            }
         });
     }
 
@@ -54,7 +73,7 @@ public class CompradorLoginMenu extends Menu{
 
         int option;
 
-        do{
+        do {
             System.out.println("Escolha o dado a ser alterado:");
             System.out.println("1. Nome: " + nome);
             System.out.println("2. Email: " + email);
@@ -64,13 +83,13 @@ public class CompradorLoginMenu extends Menu{
 
             option = scanner.nextInt();
             scanner.nextLine(); // Consume newline
-        }while(option < 1 || option > 4);
+        } while (option < 1 || option > 4);
 
         System.out.println("Novo dado:");
         String novoDado = scanner.nextLine();
 
-        if(option > 0){
-            if(option == 1){
+        if (option > 0) {
+            if (option == 1) {
                 nome = novoDado;
             } else if (option == 2) {
                 email = novoDado;
@@ -84,9 +103,9 @@ public class CompradorLoginMenu extends Menu{
         }
     }
 
-    private void visualizarHistorico(){
-        Historico historico = facade.findHistorico(comprador.getCpf());
-        
+    private void visualizarHistorico() {
+        Historico historico = facade.buscarHistoricoComprador(comprador.getCpf());
+
         historico.printHistorico();
     }
 }
