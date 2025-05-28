@@ -95,10 +95,10 @@ public class CompraMenu extends Menu {
 
         do {
             if (option == 2) {
-                System.out.print("Digite o CPF/CNPJ da loja:");
-                cpfCnpj = scanner.nextLine();
+                System.out.print("Digite o Nome da loja:");
+                String nome = scanner.nextLine();
 
-                produtos = facade.listarProdutosDaLoja(cpfCnpj);
+                produtos = facade.listarProdutosDaLojaNome(nome);
 
                 if (produtos.isEmpty()) {
                     System.out.println("Nenhum produto encontrado para esta loja");

@@ -5,7 +5,6 @@ import com.marketplace.model.Comprador;
 import com.marketplace.model.Historico;
 import com.marketplace.model.Loja;
 import com.marketplace.model.Produto;
-import com.marketplace.repository.CompradorRepository;
 import com.marketplace.model.Avaliacao; // Importação da Avaliacao
 import com.marketplace.service.AdminService;
 import com.marketplace.service.CompradorService;
@@ -17,6 +16,7 @@ import com.marketplace.service.AvaliacaoService; // Importação do serviço de 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MarketplaceFacade {
     private final LojaService lojaService;
@@ -44,6 +44,11 @@ public class MarketplaceFacade {
 
     public Optional<Loja> buscarLoja(String cpfCnpj) {
         return lojaService.buscarPorId(cpfCnpj);
+    }
+
+
+    public List<Loja> buscarLojaNome(String nome) {
+        return lojaService.buscarPorNome(nome);
     }
 
     public List<Loja> listarLojas() {
@@ -138,6 +143,31 @@ public class MarketplaceFacade {
         System.out.println();
         return produtosDaLoja;
     }
+
+    public List<Produto> listarProdutosDaLojaNome(String nomeLoja) {
+        List<Loja> lojas = listarLojas().stream()
+                .filter(loja -> loja.getNome().equalsIgnoreCase(nomeLoja))
+                .collect(Collectors.toList());
+
+        if (lojas.isEmpty()) {
+            System.out.println("Loja não encontrada.");
+            return List.of();
+        }
+
+        Loja loja = lojas.get(0);
+
+        List<Produto> produtosDaLoja = produtoService.listarPorLoja(loja.getCpfCnpj());
+
+        System.out.println("\nPRODUTOS DA LOJA: " + loja.getNome());
+        for (Produto produto : produtosDaLoja) {
+            System.out.println(produto.getNome() + " | valor: " + produto.getValor()
+                    + " | estoque: " + produto.getQuantidade()
+                    + " | id: " + produto.getId());
+        }
+        System.out.println();
+        return produtosDaLoja;
+    }
+
 
     public Produto atualizarProduto(String id, String nome, double valor, String tipo,
             int quantidade, String marca, String descricao, String lojaCpfCnpj) {

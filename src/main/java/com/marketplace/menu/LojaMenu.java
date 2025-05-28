@@ -2,6 +2,8 @@ package com.marketplace.menu;
 
 import com.marketplace.facade.MarketplaceFacade;
 import com.marketplace.model.Loja;
+
+import java.util.List;
 import java.util.Scanner;
 
 public class LojaMenu extends Menu {
@@ -39,6 +41,11 @@ public class LojaMenu extends Menu {
             public void execute() { removerLoja(); }
         });
 
+        addOption(6, new MenuOption() {
+            public String getDescription() { return "Buscar Loja por Nome"; }
+            public void execute() { buscarLojaNome(); }
+        });
+
         addOption(0, new MenuOption() {
             public String getDescription() { return "Voltar"; }
             public void execute() { }
@@ -69,6 +76,18 @@ public class LojaMenu extends Menu {
             loja -> System.out.println(loja),
             () -> System.out.println("Loja não encontrada")
         );
+    }
+
+    private void buscarLojaNome() {
+        System.out.print("Digite o nome da loja: ");
+        String nome = scanner.nextLine();
+        List<Loja> lojasEncontradas = facade.buscarLojaNome(nome);
+
+        if (lojasEncontradas.isEmpty()) {
+            System.out.println("Nenhuma loja encontrada.");
+        } else {
+            lojasEncontradas.forEach(System.out::println);
+        }
     }
 
     private void listarLojas() {
