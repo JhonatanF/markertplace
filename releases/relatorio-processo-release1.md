@@ -104,3 +104,24 @@
 
 ### Burndown Chart
 ![img.png](burndown-sp4.png)
+
+## Sprint 5 (2 semanas)
+
+### Backlog
+
+1. Avaliação de compra
+   - Sistema de avaliação por nota
+   - Sistema de avaliação por comentário
+   - Apresentar conceito da loja
+2. Refatoração
+   - Reorganização dos menus de compra
+   - Separação da função de compra entre os menus
+
+### Organização da Equipe
+- PO: Vitor Emanuel
+- QA: Jhonatan Feitosa
+- DEV: Thomas Araujo
+- DEV: Danilo Pedro
+
+### Burndown Chart
+![img.png](burndown-sp5.png)
