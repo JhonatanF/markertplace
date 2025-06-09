@@ -245,7 +245,10 @@ public class CompraMenu extends Menu {
 
                         facade.cadastrarAvaliacao(comprador.getCpf(), compraId, nota, comentario,
                                 produto.getLojaCpfCnpj());
-                        System.out.println("Avaliação registrada com sucesso para o produto: " + produto.getNome());
+                        System.out.println("Avaliação registrada com sucesso para o produto: " + produto.getNome()
+                                + "Pontuação adicionada (1 ponto).\n");
+                        bonus_pontuacao = 1;
+                        facade.adicionarPontuacao(bonus_pontuacao, comprador.getCpf());
                     }
                 }
                 carrinho.clear();
