@@ -123,4 +123,8 @@ public class CompradorLoginMenu extends Menu {
 
         historico.printHistorico();
     }
+
+    private void visualizarPontos(){
+
+    }
 }
