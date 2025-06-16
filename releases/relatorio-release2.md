@@ -83,55 +83,6 @@ classDiagram
 
 ### 1.3 Diagrama de Sequência
 
-#### 1.3.1 Compra com Carrinho
-
-```mermaid
-sequenceDiagram
-    participant C as Comprador
-    participant CLM as CompradorLoginMenu
-    participant F as MarketplaceFacade
-    participant PS as ProdutoService
-    participant PR as ProdutoRepository
-    
-    C->>CLM: Visualiza produtos
-    CLM->>F: listarProdutos()
-    F->>PS: listarTodos()
-    PS->>PR: findAll()
-    PR-->>PS: List<Produto>
-    PS-->>F: List<Produto>
-    F-->>CLM: List<Produto>
-    CLM-->>C: Mostra produtos
-    
-    C->>CLM: Seleciona produto
-    CLM->>F: buscarProduto(id)
-    F->>PS: buscarPorId(id)
-    PS->>PR: findById(id)
-    PR-->>PS: Optional<Produto>
-    PS-->>F: Optional<Produto>
-    F-->>CLM: Optional<Produto>
-    CLM-->>C: Confirma compra
-```
-
-#### 1.3.1 Solicitar Histórico
-
-```mermaid
-sequenceDiagram
-participant C as Comprador
-participant CLM as CompradorLoginMenu
-participant F as MarketplaceFacade
-participant PS as HistoricoService
-participant PR as HistoricoRepository
-
-    C->>CLM: Solicita Historico
-    CLM->>F: listarProdutos()
-    F->>PS: buscarHistoricoComprador()
-    PS->>PR: buscarPorComprador()
-    PR-->>PS: List<Produto>
-    PS-->>F: List<Produto>
-    F-->>CLM: List<Produto>
-    CLM-->>C: Mostra Historico
-```
-
 #### 1.3.1 Compra Com Carrinho
 
 ```mermaid
@@ -170,6 +121,26 @@ sequenceDiagram
     CM-->>CLM: esvaziaCarrinho()
     CLM-->>C: Compra Finalizada
     
+```
+
+#### 1.3.1 Solicitar Histórico
+
+```mermaid
+sequenceDiagram
+participant C as Comprador
+participant CLM as CompradorLoginMenu
+participant F as MarketplaceFacade
+participant PS as HistoricoService
+participant PR as HistoricoRepository
+
+    C->>CLM: Solicita Historico
+    CLM->>F: listarProdutos()
+    F->>PS: buscarHistoricoComprador()
+    PS->>PR: buscarPorComprador()
+    PR-->>PS: List<Produto>
+    PS-->>F: List<Produto>
+    F-->>CLM: List<Produto>
+    CLM-->>C: Mostra Historico
 ```
 
 ## 2. Funcionalidades Desenvolvidas
