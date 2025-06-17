@@ -1,75 +1,123 @@
 package com.marketplace.repository;
 
 import com.marketplace.model.Comprador;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CompradorRepositoryTest {
 
     private CompradorRepository compradorRepository;
     private Comprador comprador;
+    private final String testFilePath = "compradores-v1.json";
 
     @BeforeEach
     void setUp() {
-        // Inicializa o repositório de compradores
-        compradorRepository = new CompradorRepository();
+        // Limpa o arquivo antes de cada teste
+        File file = new File(testFilePath);
+        if (file.exists()) file.delete();
 
-        // Cria um novo comprador usando o construtor da classe Comprador
+        compradorRepository = new CompradorRepository();
         comprador = new Comprador("Comprador Teste", "comprador@teste.com", "senha123", "12345678901", "Avenida Teste, 456");
+        comprador.setPontuacao(50);
     }
 
     @Test
     void testSaveAndFindById() {
-        // Testa salvar um comprador e encontrá-lo pelo CPF
         compradorRepository.save(comprador);
+        Comprador found = compradorRepository.findById(comprador.getCpf()).orElse(null);
 
-        Comprador foundComprador = compradorRepository.findById(comprador.getCpf()).orElse(null);
-
-        assertNotNull(foundComprador, "Comprador deveria ser encontrado.");
-        assertEquals(comprador.getNome(), foundComprador.getNome(), "Os nomes dos compradores devem ser iguais.");
-        assertEquals(comprador.getEmail(), foundComprador.getEmail(), "Os e-mails dos compradores devem ser iguais.");
-        assertEquals(comprador.getEndereco(), foundComprador.getEndereco(), "Os endereços dos compradores devem ser iguais.");
-        assertEquals(comprador.getCpf(), foundComprador.getCpf(), "Os CPFs dos compradores devem ser iguais.");
-        assertEquals(comprador.getPontuacao(), foundComprador.getPontuacao(), "As pontuações dos compradores devem ser iguais.");
+        assertNotNull(found);
+        assertEquals("Comprador Teste", found.getNome());
+        assertEquals("comprador@teste.com", found.getEmail());
+        assertEquals("senha123", found.getSenha());
+        assertEquals("12345678901", found.getCpf());
+        assertEquals("Avenida Teste, 456", found.getEndereco());
+        assertEquals(50, found.getPontuacao());
     }
 
     @Test
     void testFindAll() {
-        // Testa a recuperação de todos os compradores
         compradorRepository.save(comprador);
-
         List<Comprador> compradores = compradorRepository.findAll();
-        assertFalse(compradores.isEmpty(), "A lista de compradores não deve estar vazia.");
-        assertTrue(compradores.contains(comprador), "Comprador deveria estar na lista.");
+
+        assertFalse(compradores.isEmpty());
+        assertTrue(compradores.stream().anyMatch(c -> c.getCpf().equals(comprador.getCpf())));
     }
 
     @Test
     void testDelete() {
-        // Testa a exclusão de um comprador
         compradorRepository.save(comprador);
-        assertTrue(compradorRepository.exists(comprador.getCpf()), "Comprador deveria existir antes de ser excluído.");
+        assertTrue(compradorRepository.exists(comprador.getCpf()));
 
         compradorRepository.delete(comprador.getCpf());
-        assertFalse(compradorRepository.exists(comprador.getCpf()), "Comprador não deveria existir após exclusão.");
+        assertFalse(compradorRepository.exists(comprador.getCpf()));
     }
 
     @Test
     void testExists() {
-        // Testa a verificação de existência de um comprador
-        assertFalse(compradorRepository.exists(comprador.getCpf()), "Comprador não deveria existir antes de ser salvo.");
-
+        assertFalse(compradorRepository.exists(comprador.getCpf()));
         compradorRepository.save(comprador);
-        assertTrue(compradorRepository.exists(comprador.getCpf()), "Comprador deveria existir após ser salvo.");
+        assertTrue(compradorRepository.exists(comprador.getCpf()));
     }
 
     @Test
     void testFindByNonExistentId() {
-        // Testa a busca por um CPF inexistente
-        Optional<Comprador> foundComprador = compradorRepository.findById("99999999999");
-        assertFalse(foundComprador.isPresent(), "Comprador com CPF inexistente não deveria ser encontrado.");
+        Optional<Comprador> notFound = compradorRepository.findById("00000000000");
+        assertFalse(notFound.isPresent());
+    }
+
+    @Test
+    void testPersistenciaERecarregamento() {
+        compradorRepository.save(comprador);
+
+        // Reinstancia repositório para testar carregamento do arquivo
+        CompradorRepository novoRepo = new CompradorRepository();
+        Optional<Comprador> loaded = novoRepo.findById(comprador.getCpf());
+
+        assertTrue(loaded.isPresent());
+        assertEquals(comprador.getPontuacao(), loaded.get().getPontuacao());
+    }
+
+    @Test
+    void testPontuacaoPadrao() {
+        Comprador novo = new Comprador("Novo", "novo@teste.com", "123", "11122233344", "Rua Nova");
+        compradorRepository.save(novo);
+
+        Optional<Comprador> resultado = compradorRepository.findById("11122233344");
+        assertTrue(resultado.isPresent());
+        assertEquals(0, resultado.get().getPontuacao(), "Pontuação padrão deve ser 0");
+    }
+
+    @Test
+    void testArquivoVazioNaoQuebra() throws IOException {
+        try (FileWriter writer = new FileWriter(testFilePath)) {
+            writer.write("");
+        }
+
+        assertDoesNotThrow(() -> new CompradorRepository(), "Repositório deve lidar com arquivo vazio");
+    }
+
+    @Test
+    void testConversaoParaJson() {
+        compradorRepository.save(comprador);
+        String json = compradorRepository.convertMapToJson();
+
+        assertTrue(json.contains("\"cpf\": \"12345678901\""));
+        assertTrue(json.contains("\"pontuacao\": 50"));
+        assertTrue(json.contains("\"nome\": \"Comprador Teste\""));
+    }
+
+    @AfterEach
+    void cleanUp() {
+        File file = new File(testFilePath);
+        if (file.exists()) file.delete();
     }
 }

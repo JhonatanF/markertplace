@@ -1,10 +1,6 @@
 package com.marketplace.facade;
 
-import com.marketplace.model.Admin;
-import com.marketplace.model.Comprador;
-import com.marketplace.model.Historico;
-import com.marketplace.model.Loja;
-import com.marketplace.model.Produto;
+import com.marketplace.model.*;
 import com.marketplace.repository.*;
 import com.marketplace.service.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +22,7 @@ class MarketplaceFacadeTest{
     private Loja loja;
     private Comprador comprador;
     private Produto produto;
+    private Avaliacao avaliacao;
 
     @BeforeEach
     void setUp() {
@@ -259,5 +256,87 @@ class MarketplaceFacadeTest{
         assertThrows(IllegalArgumentException.class, () ->
                 facade.cadastrarAdmin("Outro Admin", "outro@teste.com", "senha123", "12345678901", "Rua Admin, 456")
         );
+    }
+
+    @Test
+    void testBuscarLojaPorNome() {
+        facade.cadastrarLoja("Loja Legal", "loja@legal.com", "senha", "11111111111", "Rua Legal, 1");
+
+        List<Loja> resultado = facade.buscarLojaNome("Loja Legal");
+        assertEquals(1, resultado.size());
+        assertEquals("Loja Legal", resultado.get(0).getNome());
+    }
+
+    @Test
+    void testBuscarProdutoPorNome() {
+        facade.cadastrarLoja(loja.getNome(), loja.getEmail(), loja.getSenha(), loja.getCpfCnpj(), loja.getEndereco());
+        facade.cadastrarProduto("Notebook", 3000.0, "Eletrônico", 5, "Dell", "Notebook potente", loja.getCpfCnpj());
+
+        Optional<Produto> encontrado = facade.buscarProdutoPorNome("Notebook");
+        assertTrue(encontrado.isPresent());
+        assertEquals("Notebook", encontrado.get().getNome());
+    }
+
+    @Test
+    void testListarProdutosDaLojaPorNome() {
+        facade.cadastrarLoja("Loja XYZ", "xyz@teste.com", "senha123", "11122233344", "Av. Loja, 100");
+        facade.cadastrarProduto("Produto XYZ", 10.0, "Tipo", 1, "Marca", "Descricao", "11122233344");
+
+        List<Produto> produtos = facade.listarProdutosDaLojaNome("Loja XYZ");
+        assertEquals(1, produtos.size());
+    }
+
+    @Test
+    void testAtualizarProduto() {
+        facade.cadastrarLoja(loja.getNome(), loja.getEmail(), loja.getSenha(), loja.getCpfCnpj(), loja.getEndereco());
+        Produto produto = facade.cadastrarProduto("Celular", 1000.0, "Eletrônico", 5, "MarcaX", "Desc", loja.getCpfCnpj());
+
+        Produto atualizado = facade.atualizarProduto(produto.getId(), "Celular Premium", 1500.0, "Eletrônico", 10, "MarcaX", "Melhorado", loja.getCpfCnpj());
+        assertEquals("Celular Premium", atualizado.getNome());
+        assertEquals(1500.0, atualizado.getValor());
+        assertEquals(10, atualizado.getQuantidade());
+    }
+
+    @Test
+    void testAdicionarPontuacao() {
+        facade.cadastrarComprador(comprador.getNome(), comprador.getEmail(), comprador.getSenha(), comprador.getCpf(), comprador.getEndereco());
+        facade.adicionarPontuacao(20, comprador.getCpf());
+
+        Optional<Comprador> c = facade.buscarComprador(comprador.getCpf());
+        assertEquals(20, c.get().getPontuacao());
+    }
+
+    @Test
+    void testDecrementarPontuacao() {
+        facade.cadastrarComprador(comprador.getNome(), comprador.getEmail(), comprador.getSenha(), comprador.getCpf(), comprador.getEndereco());
+        facade.adicionarPontuacao(20, comprador.getCpf());
+        facade.decrementarPontuacao(comprador.getCpf());
+
+        Optional<Comprador> c = facade.buscarComprador(comprador.getCpf());
+        assertEquals(8, c.get().getPontuacao()); // 20 - 12
+    }
+
+    @Test
+    void testAtualizarComprador() {
+        facade.cadastrarComprador(comprador.getNome(), comprador.getEmail(), comprador.getSenha(), comprador.getCpf(), comprador.getEndereco());
+        comprador.setNome("Comprador Atualizado");
+
+        Comprador atualizado = facade.atualizarComprador(comprador);
+        assertEquals("Comprador Atualizado", atualizado.getNome());
+    }
+
+    @Test
+    void testCadastrarAvaliacaoEListar() {
+        facade.cadastrarComprador(comprador.getNome(), comprador.getEmail(), comprador.getSenha(), comprador.getCpf(), comprador.getEndereco());
+        facade.cadastrarLoja(loja.getNome(), loja.getEmail(), loja.getSenha(), loja.getCpfCnpj(), loja.getEndereco());
+
+        Produto produto = facade.cadastrarProduto("Produto Avaliado", 100.0, "Tipo", 1, "Marca", "Desc", loja.getCpfCnpj());
+        String historicoId = facade.registrarCompra(comprador.getCpf(), List.of(produto), 100.0);
+
+        facade.cadastrarAvaliacao(comprador.getCpf(), historicoId, 5, "Ótimo!", loja.getCpfCnpj());
+
+        List<Avaliacao> avaliacoes = facade.listarAvaliacoesPorCompra(historicoId);
+        assertEquals(1, avaliacoes.size());
+        assertEquals(5, avaliacoes.get(0).getNota());
     }
 }

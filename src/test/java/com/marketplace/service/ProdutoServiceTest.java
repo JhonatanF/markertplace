@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ProdutoServiceTest {
     @TempDir
     Path tempDir;
-    
+
     private ProdutoRepository produtoRepository;
     private LojaRepository lojaRepository;
     private ProdutoService service;
@@ -29,18 +29,19 @@ class ProdutoServiceTest {
         produtoRepository = new ProdutoRepository();
         lojaRepository = new LojaRepository();
         service = new ProdutoService(produtoRepository, lojaRepository);
-        
+
         loja = new Loja("Loja Teste", "loja@teste.com", "senha123", "12345678901", "Rua Teste, 123");
         lojaRepository.save(loja);
-        
+
         produto = new Produto("Produto Teste", 99.99, "Tipo", 10, "Marca", "Descrição", loja.getCpfCnpj());
-        service.removerProdutos();
+
+        service.removerProdutos(); // limpa todos os produtos antes de cada teste
     }
 
     @Test
     void testCadastrarProduto() {
         Produto cadastrado = service.cadastrar(produto);
-        
+
         assertNotNull(cadastrado.getId());
         assertEquals(produto.getNome(), cadastrado.getNome());
         assertEquals(produto.getValor(), cadastrado.getValor());
@@ -55,7 +56,7 @@ class ProdutoServiceTest {
     void testCadastrarProdutoComLojaInexistente() {
         produto.setLojaCpfCnpj("loja-inexistente");
         assertThrows(IllegalArgumentException.class, () ->
-            service.cadastrar(produto)
+                service.cadastrar(produto)
         );
     }
 
@@ -63,7 +64,7 @@ class ProdutoServiceTest {
     void testCadastrarProdutoComQuantidadeNegativa() {
         produto.setQuantidade(-1);
         assertThrows(IllegalArgumentException.class, () ->
-            service.cadastrar(produto)
+                service.cadastrar(produto)
         );
     }
 
@@ -71,14 +72,14 @@ class ProdutoServiceTest {
     void testCadastrarProdutoComValorNegativo() {
         produto.setValor(-1.0);
         assertThrows(IllegalArgumentException.class, () ->
-            service.cadastrar(produto)
+                service.cadastrar(produto)
         );
     }
 
     @Test
     void testBuscarProduto() {
         Produto cadastrado = service.cadastrar(produto);
-        
+
         Optional<Produto> encontrado = service.buscarPorId(cadastrado.getId());
         assertTrue(encontrado.isPresent());
         assertEquals(cadastrado.getId(), encontrado.get().getId());
@@ -87,9 +88,9 @@ class ProdutoServiceTest {
     @Test
     void testListarProdutos() {
         service.cadastrar(produto);
-        
-        Produto produto2 = new Produto("Outro Produto", 50.0, "Tipo2", 5, "Marca2", 
-                                     "Desc2", produto.getLojaCpfCnpj());
+
+        Produto produto2 = new Produto("Outro Produto", 50.0, "Tipo2", 5, "Marca2",
+                "Desc2", produto.getLojaCpfCnpj());
         service.cadastrar(produto2);
 
         List<Produto> produtos = service.listarTodos();
@@ -99,9 +100,9 @@ class ProdutoServiceTest {
     @Test
     void testListarProdutosPorLoja() {
         service.cadastrar(produto);
-        
-        Produto produto2 = new Produto("Outro Produto", 50.0, "Tipo2", 5, "Marca2", 
-                                     "Desc2", produto.getLojaCpfCnpj());
+
+        Produto produto2 = new Produto("Outro Produto", 50.0, "Tipo2", 5, "Marca2",
+                "Desc2", produto.getLojaCpfCnpj());
         service.cadastrar(produto2);
 
         List<Produto> produtos = service.listarPorLoja(produto.getLojaCpfCnpj());
@@ -112,7 +113,7 @@ class ProdutoServiceTest {
     @Test
     void testAtualizarProduto() {
         Produto cadastrado = service.cadastrar(produto);
-        
+
         cadastrado.setNome("Nome Atualizado");
         cadastrado.setValor(199.99);
         cadastrado.setTipo("Novo Tipo");
@@ -121,7 +122,7 @@ class ProdutoServiceTest {
         cadastrado.setDescricao("Nova Descrição");
 
         Produto atualizado = service.atualizar(cadastrado);
-        
+
         assertEquals("Nome Atualizado", atualizado.getNome());
         assertEquals(199.99, atualizado.getValor());
         assertEquals("Novo Tipo", atualizado.getTipo());
@@ -134,16 +135,58 @@ class ProdutoServiceTest {
     void testAtualizarProdutoInexistente() {
         produto.setId("id-inexistente");
         assertThrows(IllegalArgumentException.class, () ->
-            service.atualizar(produto)
+                service.atualizar(produto)
+        );
+    }
+
+    @Test
+    void testAtualizarProdutoComQuantidadeNegativa() {
+        Produto cadastrado = service.cadastrar(produto);
+        cadastrado.setQuantidade(-5);
+        assertThrows(IllegalArgumentException.class, () ->
+                service.atualizar(cadastrado)
+        );
+    }
+
+    @Test
+    void testAtualizarProdutoComValorZeroOuNegativo() {
+        Produto cadastrado = service.cadastrar(produto);
+        cadastrado.setValor(0);
+        assertThrows(IllegalArgumentException.class, () ->
+                service.atualizar(cadastrado)
+        );
+        cadastrado.setValor(-10);
+        assertThrows(IllegalArgumentException.class, () ->
+                service.atualizar(cadastrado)
         );
     }
 
     @Test
     void testRemoverProduto() {
         Produto cadastrado = service.cadastrar(produto);
-        
+
         assertTrue(service.buscarPorId(cadastrado.getId()).isPresent());
         service.remover(cadastrado.getId());
         assertFalse(service.buscarPorId(cadastrado.getId()).isPresent());
+    }
+
+    @Test
+    void testRemoverProdutoInexistente() {
+        assertThrows(IllegalArgumentException.class, () ->
+                service.remover("id-inexistente")
+        );
+    }
+
+    @Test
+    void testRemoverTodosProdutos() {
+        service.cadastrar(produto);
+        Produto produto2 = new Produto("Produto 2", 20.0, "Tipo", 5, "Marca", "Desc", produto.getLojaCpfCnpj());
+        service.cadastrar(produto2);
+
+        assertEquals(2, service.listarTodos().size());
+
+        service.removerProdutos();
+
+        assertTrue(service.listarTodos().isEmpty());
     }
 }

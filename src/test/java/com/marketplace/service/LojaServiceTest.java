@@ -13,6 +13,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LojaServiceTest {
+
     @TempDir
     Path tempDir;
 
@@ -25,7 +26,7 @@ class LojaServiceTest {
         repository = new LojaRepository();
         service = new LojaService(repository);
         loja = new Loja("Loja Teste", "loja@teste.com", "senha123", "12345678901", "Rua Teste, 123");
-        service.removerLojas();
+        service.removerLojas(); // garante ambiente limpo
     }
 
     @Test
@@ -52,11 +53,28 @@ class LojaServiceTest {
     }
 
     @Test
+    void testBuscarPorNome_CaseInsensitive() {
+        service.cadastrar(loja);
+        Loja loja2 = new Loja("Outra Loja", "outra@email.com", "senha456",
+                "98765432101", "Rua Outra, 456");
+        service.cadastrar(loja2);
+
+        List<Loja> resultado1 = service.buscarPorNome("loja");
+        List<Loja> resultado2 = service.buscarPorNome("LOJA");
+        List<Loja> resultado3 = service.buscarPorNome("Outra");
+
+        assertEquals(2, resultado1.size());
+        assertEquals(2, resultado2.size());
+        assertEquals(1, resultado3.size());
+        assertEquals("Outra Loja", resultado3.get(0).getNome());
+    }
+
+    @Test
     void testListarLojas() {
         service.cadastrar(loja);
 
         Loja loja2 = new Loja("Outra Loja", "outra@email.com", "senha456",
-                             "98765432101", "Rua Outra, 456");
+                "98765432101", "Rua Outra, 456");
         service.cadastrar(loja2);
 
         List<Loja> lojas = service.listarTodas();
@@ -81,6 +99,14 @@ class LojaServiceTest {
     }
 
     @Test
+    void testAtualizarLojaInexistente() {
+        Loja lojaInexistente = new Loja("Nome", "email@test.com", "senha", "cpf-inexistente", "endereco");
+        assertThrows(IllegalArgumentException.class, () ->
+                service.atualizar(lojaInexistente)
+        );
+    }
+
+    @Test
     void testRemoverLoja() {
         service.cadastrar(loja);
 
@@ -90,10 +116,9 @@ class LojaServiceTest {
     }
 
     @Test
-    void testAtualizarLojaInexistente() {
-        Loja lojaInexistente = new Loja("Nome", "email@test.com", "senha", "cpf-inexistente", "endereco");
+    void testRemoverLojaInexistente() {
         assertThrows(IllegalArgumentException.class, () ->
-            service.atualizar(lojaInexistente)
+                service.remover("cpf-inexistente")
         );
     }
 
@@ -102,7 +127,21 @@ class LojaServiceTest {
         service.cadastrar(loja);
 
         assertThrows(IllegalArgumentException.class, () ->
-            service.cadastrar(loja)
+                service.cadastrar(loja)
         );
+    }
+
+    @Test
+    void testRemoverTodasAsLojas() {
+        service.cadastrar(loja);
+        Loja loja2 = new Loja("Outra Loja", "outra@email.com", "senha456",
+                "98765432101", "Rua Outra, 456");
+        service.cadastrar(loja2);
+
+        assertEquals(2, service.listarTodas().size());
+
+        service.removerLojas();
+
+        assertTrue(service.listarTodas().isEmpty());
     }
 }

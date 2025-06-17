@@ -64,7 +64,7 @@ public class HistoricoRepository {
         }
     }
 
-    private void salvarTodos(List<Historico> historicos) {
+    public void salvarTodos(List<Historico> historicos) {
         JsonArray jsonArray = new JsonArray();
         for (Historico h : historicos) {
             jsonArray.add(gson.toJsonTree(h));

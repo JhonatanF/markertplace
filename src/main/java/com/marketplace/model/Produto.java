@@ -14,6 +14,8 @@ public class Produto implements Serializable, Cloneable{
     private String descricao;
     private String lojaCpfCnpj;
 
+    public Produto() {}
+
     public Produto(String nome, double valor, String tipo, int quantidade, String marca, String descricao, String lojaCpfCnpj) {
         this.id = java.util.UUID.randomUUID().toString();
         this.nome = nome;
