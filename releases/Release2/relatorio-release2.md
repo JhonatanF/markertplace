@@ -181,15 +181,17 @@ participant PR as HistoricoRepository
 ## 4. Relatório de Testes
 
 ### 4.1 Cobertura de Código
-   Linha: 85%
-   Branch: 80%
-   Complexidade: 75% 
+
+Obs: menu e model são irrelevantes
+#### Cobertura: incluindo diretórios irrelevantes/cobertura real
+
+- Linha: 33%/83,62%
+- Métodos: 32%/85%
 
 -- prints
-    ![Cobertura de Código](cobertura.png)
-    ![Complexidade](complexidade.png)
+![Cobertura de Código](cobertura-testes-release2.png)
 ### 4.2 Testes Unitários
-- Total de testes: X
-- Passed: X
+- Total de testes: 84
+- Passed: 84
 - Failed: 0
-- Skipped: X
+- Skipped: 0
