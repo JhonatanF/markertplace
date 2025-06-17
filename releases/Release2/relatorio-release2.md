@@ -161,9 +161,26 @@ participant PR as HistoricoRepository
 - Permanencia individual do carrinho
 - Permanencia de login de usuários no sistema por tempo limitado
 
-## 3. Relatório de Testes
+## 3. Prints com as funcionalidades
 
-### 3.1 Cobertura de Código
+### 3.1 Adicionar Produto ao Carrinho
+![img.jpg](adicionarProd.jpg)
+
+### 3.2 Visualizar Produtos no Carrinho
+![img.jpg](visualizarProd.jpg)
+
+### 3.3 Remover Produto do Carrinho
+![img.jpg](removerProd.jpg)
+
+### 3.4 Finalizar Compra
+![img.jpg](finalizarCompra.jpg)
+
+### 3.5 Histórico de Compras
+![img.jpg](historico.jpg)
+
+## 4. Relatório de Testes
+
+### 4.1 Cobertura de Código
    Linha: 85%
    Branch: 80%
    Complexidade: 75% 
@@ -171,7 +188,7 @@ participant PR as HistoricoRepository
 -- prints
     ![Cobertura de Código](cobertura.png)
     ![Complexidade](complexidade.png)
-### 3.2 Testes Unitários
+### 4.2 Testes Unitários
 - Total de testes: X
 - Passed: X
 - Failed: 0
