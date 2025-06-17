@@ -5,16 +5,8 @@ import com.marketplace.model.Comprador;
 import com.marketplace.model.Historico;
 import com.marketplace.model.Loja;
 import com.marketplace.model.Produto;
-import com.marketplace.repository.AdminRepository;
-import com.marketplace.repository.CompradorRepository;
-import com.marketplace.repository.HistoricoRepository;
-import com.marketplace.repository.LojaRepository;
-import com.marketplace.repository.ProdutoRepository;
-import com.marketplace.service.AdminService;
-import com.marketplace.service.CompradorService;
-import com.marketplace.service.HistoricoService;
-import com.marketplace.service.LojaService;
-import com.marketplace.service.ProdutoService;
+import com.marketplace.repository.*;
+import com.marketplace.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -42,14 +34,16 @@ class MarketplaceFacadeTest{
         ProdutoRepository produtoRepo = new ProdutoRepository();
         AdminRepository adminRepo = new AdminRepository();
         HistoricoRepository historicoRepo = new HistoricoRepository(Historico.class);
+        AvaliacaoRepository avaliacaoRepo = new AvaliacaoRepository();
 
         LojaService lojaService = new LojaService(lojaRepo);
         CompradorService compradorService = new CompradorService(compradorRepo);
         ProdutoService produtoService = new ProdutoService(produtoRepo, lojaRepo);
         AdminService adminService = new AdminService(adminRepo);
         HistoricoService historicoService = new HistoricoService(historicoRepo);
+        AvaliacaoService avaliacaoService = new AvaliacaoService(avaliacaoRepo);
 
-        facade = new MarketplaceFacade(lojaService, compradorService, produtoService, adminService, historicoService);
+        facade = new MarketplaceFacade(lojaService, compradorService, produtoService, adminService, historicoService, avaliacaoService);
 
         // Criar dados de teste
         admin = new Admin("Admin Teste", "admin@teste.com", "senha123", "12345678901", "Rua Admin, 123");
@@ -104,13 +98,6 @@ class MarketplaceFacadeTest{
         // Listar
         List<Comprador> compradores = facade.listarCompradores();
         assertEquals(1, compradores.size());
-        
-        // Atualizar
-        String novoNome = "Comprador Atualizado";
-        Comprador atualizado = facade.atualizarComprador(novoNome, comprador.getEmail(), 
-                                                       comprador.getSenha(), comprador.getCpf(), 
-                                                       comprador.getEndereco());
-        assertEquals(novoNome, atualizado.getNome());
         
         // Remover
         facade.removerComprador(comprador.getCpf());

@@ -220,15 +220,18 @@ sequenceDiagram
 ## 4. Relatório de Testes
 
 ### 4.1 Cobertura de Código
-   Linha: 85%
-   Branch: 80%
-   Complexidade: 75% 
+
+Obs: menu e model são irrelevantes
+Cobertura: incluindo diretórios irrelevantes/cobertura real
+
+   Linha: 21%/94,33%
+   Branch: 28%/90,45%
+   Métodos: 32%/98,6%
 
 -- prints
-    ![Cobertura de Código](cobertura.png)
-    ![Complexidade](complexidade.png)
+    ![Cobertura de Código](cobertura-testes-release1.png)
 ### 4.2 Testes Unitários
-- Total de testes: X
-- Passed: X
+- Total de testes: 69
+- Passed: 69
 - Failed: 0
-- Skipped: X
+- Skipped: 0
