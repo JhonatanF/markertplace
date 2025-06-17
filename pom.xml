@@ -91,6 +91,13 @@
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>com/marketplace/menu/**</exclude>
+                                <exclude>com/marketplace/model/**</exclude>
+                                <exclude>com/marketplace/Main.class</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>report</id>
