@@ -40,4 +40,7 @@ public class HistoricoService {
         return repository.listarTodos();
     }
 
+    public void removerHistoricos() {
+        repository.removerHistoricos();
+    }
 }

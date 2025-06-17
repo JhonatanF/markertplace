@@ -232,6 +232,10 @@ public class MarketplaceFacade {
         lojaService.removerLojas();
     }
 
+    protected void removerHistoricos() {
+        historicoService.removerHistoricos();
+    }
+
     public Avaliacao cadastrarAvaliacao(String compradorCpf, String historicoId, int nota, String comentario,
             String idLoja) {
         Avaliacao avaliacao = new Avaliacao(compradorCpf, historicoId, nota, comentario, idLoja);

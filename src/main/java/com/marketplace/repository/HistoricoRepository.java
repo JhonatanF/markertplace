@@ -79,4 +79,8 @@ public class HistoricoRepository {
             throw new RuntimeException("Erro ao salvar arquivo de históricos", e);
         }
     }
+
+    public void removerHistoricos() {
+        salvarTodos(new ArrayList<>());
+    }
 }

@@ -1,4 +1,4 @@
-# Relatório Release 1 - Marketplace
+# Relatório Release 2 - Marketplace
 
 ## 1. Arquitetura
 
@@ -8,7 +8,9 @@ graph TD
     A[Comprador] -->|Realiza Login| B(Sistema)
     A -->|Cadastra-se| B
     A -->|Visualiza Produtos| B
+    A -->|Gerencia Carrinho| B
     A -->|Compra Produtos| B
+    A -->|Visualiza Historico| B
     C[Loja] -->|Gerencia Produtos| B
     C -->|Cadastra-se| B
     D[Admin] -->|Gerencia Usuários| B
@@ -24,6 +26,7 @@ classDiagram
     Menu <|-- CompradorLoginMenu
     Menu <|-- LojaLoginMenu
     Menu <|-- ProdutoMenu
+    Menu <|-- CompraMenu
 
     MarketplaceFacade --> AdminService
     MarketplaceFacade --> LojaService
@@ -79,36 +82,21 @@ classDiagram
 ```
 
 ### 1.3 Diagrama de Sequência
-```mermaid
-sequenceDiagram
-    participant C as Comprador
-    participant MM as MainMenu
-    participant LM as LoginMenu
-    participant F as MarketplaceFacade
-    participant CS as CompradorService
-    participant CR as CompradorRepository
-    
-    C->>MM: Inicia aplicação
-    MM->>LM: Seleciona Login
-    LM->>F: loginComprador(cpf, senha)
-    F->>CS: buscarPorId(cpf)
-    CS->>CR: findById(cpf)
-    CR-->>CS: Optional<Comprador>
-    CS-->>F: Optional<Comprador>
-    F-->>LM: Optional<Comprador>
-    LM-->>C: Mostra menu comprador
-```
+
+#### 1.3.1 Compra Com Carrinho
 
 ```mermaid
 sequenceDiagram
     participant C as Comprador
     participant CLM as CompradorLoginMenu
+    participant CM as CompraMenu
     participant F as MarketplaceFacade
     participant PS as ProdutoService
     participant PR as ProdutoRepository
     
-    C->>CLM: Visualiza produtos
-    CLM->>F: listarProdutos()
+    C->>CLM: Realizar Compra
+    CLM->>CM: CompraMenu()
+    CM->>F: listarProdutoss()
     F->>PS: listarTodos()
     PS->>PR: findAll()
     PR-->>PS: List<Produto>
@@ -116,68 +104,62 @@ sequenceDiagram
     F-->>CLM: List<Produto>
     CLM-->>C: Mostra produtos
     
-    C->>CLM: Seleciona produto
-    CLM->>F: buscarProduto(id)
-    F->>PS: buscarPorId(id)
-    PS->>PR: findById(id)
-    PR-->>PS: Optional<Produto>
-    PS-->>F: Optional<Produto>
-    F-->>CLM: Optional<Produto>
-    CLM-->>C: Confirma compra
+    loop AddToCart = True
+        C->>CLM: Seleciona Produto
+        CLM->>CM: selecionaProduto()
+        CM->>F: buscarProduto(id)
+        F->>PS: buscarPorId(id)
+        PS->>PR: findById(id)
+        PR-->>PS: Optional<Produto>
+        PS-->>F: Optional<Produto>
+        F-->>CLM: Optional<Produto>
+        CLM-->>C: Adiciona ao Carrinho
+    end
+    
+    C->>CLM: Finaliza a Compra
+    CLM->>CM: finalizarCompra()
+    CM-->>CLM: esvaziaCarrinho()
+    CLM-->>C: Compra Finalizada
+    
 ```
+
+#### 1.3.1 Solicitar Histórico
 
 ```mermaid
 sequenceDiagram
-    participant A as Admin
-    participant ALM as AdminLoginMenu
-    participant F as MarketplaceFacade
-    participant LS as LojaService
-    participant LR as LojaRepository
-    
-    A->>ALM: Cadastra loja
-    ALM->>F: cadastrarLoja(dados)
-    F->>LS: cadastrar(loja)
-    LS->>LR: save(loja)
-    LR-->>LS: Loja
-    LS-->>F: Loja
-    F-->>ALM: Loja
-    ALM-->>A: Confirma cadastro
-```
+participant C as Comprador
+participant CLM as CompradorLoginMenu
+participant F as MarketplaceFacade
+participant PS as HistoricoService
+participant PR as HistoricoRepository
 
-```mermaid
-sequenceDiagram
-    participant L as Loja
-    participant LLM as LojaLoginMenu
-    participant F as MarketplaceFacade
-    participant PS as ProdutoService
-    participant PR as ProdutoRepository
-    
-    L->>LLM: Cadastra produto
-    LLM->>F: cadastrarProduto(dados)
-    F->>PS: cadastrar(produto)
-    PS->>PR: save(produto)
-    PR-->>PS: Produto
-    PS-->>F: Produto
-    F-->>LLM: Produto
-    LLM-->>L: Confirma cadastro
+    C->>CLM: Solicita Historico
+    CLM->>F: listarProdutos()
+    F->>PS: buscarHistoricoComprador()
+    PS->>PR: buscarPorComprador()
+    PR-->>PS: List<Produto>
+    PS-->>F: List<Produto>
+    F-->>CLM: List<Produto>
+    CLM-->>C: Mostra Historico
 ```
 
 ## 2. Funcionalidades Desenvolvidas
 
-### 2.1 Sistema de Login e Cadastro
-- Implementado sistema de autenticação para três tipos de usuários
-- Validação de dados cadastrais
-- Gerenciamento de sessão
+### 2.1 Carrinho de Compras
+- CRUD do carrinho de compras
+- Possibilidade de aplicar cupons
 
-### 2.2 Gerenciamento de Produtos
-- CRUD completo de produtos
-- Validações de negócio
-- Listagem por loja
+### 2.2 Vendas de Produtos
+- Gerenciamento do carrinho de compras (adicionar, remover)
+- Possibilidade de realizar a compra dos produtos selecionados
 
-### 2.3 Gerenciamento de Usuários
-- Cadastro e atualização de dados
-- Remoção de contas
-- Níveis de acesso
+### 2.3 Histórico de Compras
+- Histórico individual de produtos
+- Histórico individual de lojas dos produtos comprados
+
+### 2.4 Permanência
+- Permanencia individual do carrinho
+- Permanencia de login de usuários no sistema por tempo limitado
 
 ## 3. Relatório de Testes
 
@@ -187,10 +169,10 @@ sequenceDiagram
    Complexidade: 75% 
 
 -- prints
-    ![Cobertura de Código](cobertura.png)
+    ![Cobertura de Código](img.png)
     ![Complexidade](complexidade.png)
 ### 3.2 Testes Unitários
-- Total de testes: X
-- Passed: X
+- Total de testes: 50
+- Passed: 50X
 - Failed: 0
 - Skipped: X

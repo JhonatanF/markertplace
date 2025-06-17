@@ -26,7 +26,7 @@
 - DEV: Matheus Victor
 
 ### Burndown Chart
-![img.png](burndown-sp1.png)
+![img.png](1-one/burndown-sp1.png)
 
 ## Sprint 2 (2 semanas)
 
@@ -52,7 +52,7 @@
 - DEV: Vinícius Araújo
 
 ### Burndown Chart
-![img.png](burndown-sp2.png)
+![img.png](2-two/burndown-sp2.png)
 
 ## Sprint 3 (2 semanas)
 
@@ -73,7 +73,7 @@
 - DEV: Vitor Emanuel
 
 ### Burndown Chart
-![img.png](burndown-sp3.png)
+![img.png](3-tree/burndown-sp3.png)
 
 ## Sprint 4 (4 semanas)
 
@@ -103,7 +103,7 @@
 - DEV: Matheus Victor
 
 ### Burndown Chart
-![img.png](burndown-sp4.png)
+![img.png](4-four/burndown-sp4.png)
 
 ## Sprint 5 (2 semanas)
 
@@ -124,4 +124,4 @@
 - DEV: Danilo Pedro
 
 ### Burndown Chart
-![img.png](burndown-sp5.png)
+![img.png](5-five/burndown-sp5.png)
