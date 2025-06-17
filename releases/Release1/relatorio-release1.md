@@ -179,9 +179,47 @@ sequenceDiagram
 - Remoção de contas
 - Níveis de acesso
 
-## 3. Relatório de Testes
+## 3. Prints das Funcionalidades
 
-### 3.1 Cobertura de Código
+### 3.1 Tela Inicial (View do Usuário)
+![img.jpg](telaInicial.jpg)
+
+### 3.2 Tela de Login (View do Usuário)
+![img.jpg](telaLogin.jpg)
+
+### 3.3 Cadastrar Comprador (View do Usuário)
+![img.jpg](cadastrarComprador.jpg)
+
+### 3.4 Login Comprador (View do Usuário)
+![img.jpg](loginComprador.jpg)
+
+### 3.5 Gerenciar Produtos (View do Admin)
+![img.jpg](gerenciarProdutos.jpg)
+
+### 3.6 Cadastrar Produto (View do Admin)
+![img.jpg](cadastrarProdutos.jpg)
+
+### 3.7 Listar Produtos (View do Admin)
+![img.jpg](listarProdutos.jpg)
+
+### 3.8 Buscar Produto (View do Admin)
+![img.jpg](buscarProduto.jpg)
+
+### 3.9 Atualizar Produto (View do Admin)
+![img.jpg](atualizarProduto.jpg)
+
+### 3.10 Remover Produto (View do Admin)
+![img.jpg](removerProduto.jpg)
+
+### 3.11 Gerenciar e Remover Comprador (View do Admin)
+![img.jpg](removerComprador.jpg)
+
+### 3.12 Atualizar dado do Comprador (View do Comprador)
+![img.jpg](atualizarComprador.jpg)
+
+## 4. Relatório de Testes
+
+### 4.1 Cobertura de Código
    Linha: 85%
    Branch: 80%
    Complexidade: 75% 
@@ -189,7 +227,7 @@ sequenceDiagram
 -- prints
     ![Cobertura de Código](cobertura.png)
     ![Complexidade](complexidade.png)
-### 3.2 Testes Unitários
+### 4.2 Testes Unitários
 - Total de testes: X
 - Passed: X
 - Failed: 0
