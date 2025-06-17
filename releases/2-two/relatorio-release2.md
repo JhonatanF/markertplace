@@ -188,7 +188,6 @@ participant PR as HistoricoRepository
 -- prints
     ![Cobertura de Código](img.png)
     ![Complexidade](complexidade.png)
-<<<<<<<< HEAD:releases/2-two/relatorio-release2.md
 ### 3.2 Testes Unitários
 - Total de testes: 50
 - Passed: 50X
@@ -196,6 +195,5 @@ participant PR as HistoricoRepository
 ### 4.2 Testes Unitários
 - Total de testes: X
 - Passed: X
->>>>>>>> 57275e6dcdaaa38ee899a0cce85be20da3db7d03:releases/Release2/relatorio-release2.md
 - Failed: 0
 - Skipped: X
